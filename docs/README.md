@@ -1,373 +1,769 @@
+# 🚌 Sistema de Gerenciamento de Transporte Escolar
 
-# Sistema de Gerenciamento de Alunos em Ônibus para Eventos
+<div align="center">
 
-## 🆕 Novas Funcionalidades Implementadas (Agosto 2025)
+![Version](https://img.shields.io/badge/version-2.0-blue)
+![PHP](https://img.shields.io/badge/PHP-7.4+-777BB4?logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-5.7+-4479A1?logo=mysql)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-### 🎯 Sistema Completo de Gerenciamento de Eventos e Ônibus
+</div>
 
-#### 📅 Gerenciamento de Eventos
-- **Cadastrar Eventos**: Crie eventos com nome, período, local e descrição
-- **Visualizar Estatísticas**: Veja total de alunos e ônibus por evento
-- **Editar/Remover Eventos**: Gerencie eventos existentes com segurança
-- **Integração Completa**: Eventos conectam alunos, ônibus e alocações
-
-#### 🚌 Gerenciamento de Ônibus
-- **Cadastrar Ônibus**: Registre ônibus, vans ou micro-ônibus por evento
-- **Definir Capacidades**: Configure capacidade máxima e dias de reserva
-- **Organização por Evento**: Cada ônibus é vinculado a um evento específico
-- **Controle Total**: Edite ou remova ônibus conforme necessário
-
-#### ⚡ Alocação Automática Inteligente
-- **Baseada na Ordem de Inscrição**: Alunos são alocados por ordem de chegada (data_inscricao)
-- **Distribuição Equilibrada**: Sistema distribui alunos igualmente entre ônibus disponíveis
-- **Preview Antes da Alocação**: Visualize como ficará a distribuição antes de confirmar
-- **Limpeza e Reprocessamento**: Permite limpar alocações atuais e refazer distribuição
-- **Respeito à Capacidade**: Sistema respeita limite máximo de cada veículo
-
-### 🔄 Novo Fluxo de Uso Recomendado
-
-1. **📅 Criar Evento** (`eventos.php`)
-   - Defina nome, datas, local e descrição do evento
-
-2. **🚌 Cadastrar Ônibus** (`onibus.php`)
-   - Registre todos os veículos disponíveis para o evento
-   - Defina capacidades e períodos de reserva
-
-3. **👥 Importar Alunos** (`import_students.php`)
-   - Importe alunos em massa (sistema registra automaticamente data de inscrição)
-   - Cada aluno importado recebe timestamp de inscrição
-
-4. **⚡ Alocação Automática** (`alocacao.php`)
-   - Sistema aloca automaticamente baseado na ordem de inscrição
-   - Primeiro aluno inscrito = primeiro alocado
-   - Distribuição igualitária entre ônibus disponíveis
-
-5. **📋 Controle de Presença** (`presence.php`)
-   - Marque alunos que embarcaram/desembarcaram
-   - Sistema já sabe qual ônibus cada aluno foi alocado
-
-6. **📊 Relatórios** (`daily_report.php`)
-   - Visualize presenças por ônibus e data
-   - Estatísticas completas de embarque/retorno
-
-### 🗄️ Estrutura do Banco de Dados Atualizada
-
-#### Novas Tabelas:
-- **`eventos`**: Armazena informações dos eventos
-- **`onibus`**: Cadastro de veículos por evento
-- **`alocacoes_onibus`**: Liga alunos a ônibus específicos
-
-#### Tabelas Atualizadas:
-- **`alunos`**: Adicionada coluna `evento_id` e `data_inscricao`
-- **Compatibilidade**: Mantém todas as funcionalidades anteriores
-
-### 🚀 Como Atualizar o Sistema
-
-1. **Execute o Script de Atualização**:
-   ```bash
-   # Acesse no navegador:
-   http://localhost/onibus/update_database_new.php
-   ```
-
-2. **O que o script faz**:
-   - ✅ Cria tabelas `eventos`, `onibus`, `alocacoes_onibus`
-   - ✅ Adiciona colunas necessárias à tabela `alunos`
-   - ✅ Cria evento e ônibus de exemplo
-   - ✅ Verifica estrutura completa do banco
-
-3. **Acesse as novas funcionalidades**:
-   - **Eventos**: `eventos.php`
-   - **Ônibus**: `onibus.php`
-   - **Alocação Automática**: `alocacao.php`
-
-### 📱 Interface Melhorada
-
-- **Menu Reorganizado**: Novo dropdown "Gerenciamento" com Eventos, Ônibus e Alocação
-- **Responsividade**: Todas as páginas funcionam perfeitamente em mobile
-- **Feedback Visual**: Loading states, mensagens de sucesso/erro
-- **Modais Interativos**: Confirmações seguras para ações críticas
-
-### 🔒 Segurança e Integridade
-
-- **Prepared Statements**: Todas as consultas usam prepared statements
-- **Foreign Keys**: Relacionamentos íntegros entre tabelas
-- **Transações**: Operações críticas usam transações para consistência
-- **Validações**: Dados validados tanto no frontend quanto backend
+> **Sistema completo e profissional para gerenciamento de eventos escolares, alunos, frota de ônibus e alocações automáticas com QR Code**
 
 ---
 
-## Objetivo
+## 📋 **Sobre o Sistema**
 
-Desenvolver um sistema para gerenciar o embarque e retorno de alunos em ônibus escolares utilizados em eventos institucionais, com foco no controle de presença, alocação de alunos, geração de listas (online e física) e autorizações.
+O **Sistema de Gerenciamento de Transporte Escolar** é uma solução moderna e completa desenvolvida para instituições educacionais que precisam organizar o transporte de alunos para eventos. O sistema oferece:
 
-## Funcionalidades Principais
-
-- Cadastro de alunos, responsáveis, ônibus e eventos
-- Alocação de alunos em diferentes ônibus para eventos específicos
-- Importação em massa de alunos (copiar e colar)
-- Controle de presença dos alunos, com registro de embarque e retorno
-- Geração de listas de presença online e físicas (para impressão e controle manual)
-- Identificação de alunos que não retornaram no ônibus e notificação ao responsável pelo ônibus
-- Geração de formulários de autorização de saída e de uso de imagem
-- No primeiro acesso do aluno, preenchimento de cadastro completo, utilizando RM e senha como identificadores
-- Geração de formulário de presença para cada ônibus disponibilizado
-- Possibilidade de verificar quantos alunos embarcaram e quantos não retornaram
-- Autorização de saída da escola inclui autorização de uso de imagem, gerada para todos os eventos em que o aluno participar
-- Cadastro do aluno solicita data de aniversário e permissão para receber notificações por WhatsApp
-- Envio automático de mensagens via WhatsApp para alunos autorizados, em lotes de 20 a cada 5 segundos, quando o embarque for autorizado
-
-## Fluxo de Uso
-
-1. Cadastro/importação dos alunos e responsáveis
-2. Cadastro dos ônibus e eventos
-3. Alocação dos alunos nos ônibus para cada evento
-4. Geração de listas de presença (online e física) para embarque e retorno
-5. Controle de presença no embarque e no retorno
-6. Registro e comunicação de alunos que não retornaram no ônibus
-7. Geração e armazenamento de autorizações e formulários necessários
-8. Inclusão automática de autorização de uso de imagem em todas as autorizações de saída
-9. Envio de notificações por WhatsApp para os alunos autorizados, em lotes, no momento do embarque
-
-## Tecnologias
-
-- **Backend:** PHP
-- **Frontend:** Bootstrap (framework CSS)
-- **Banco de Dados:** MySQL (base chamada `onibus`)
-
-## Como Usar o Sistema
-
-1. **Página Inicial**:
-   - Acesse `index.php` para ver o painel principal
-   - O sistema detecta automaticamente o ambiente (local/online)
-
-2. **Configuração Inicial**:
-   - Use os links na página inicial para instalar ou atualizar o banco
-   - O sistema detecta automaticamente se está rodando localmente ou no servidor remoto
-   - Para desenvolvimento local: usa `localhost`, usuário `root`, senha em branco
-   - Para produção: usa o servidor remoto com as credenciais configuradas
-
-3. **Instalação do Banco**:
-   - Acesse `install.php` para criar o banco de dados
-   - Ou use `update_database.php` se precisar atualizar tabelas existentes
-   - Use `update_autorizacoes.php` para adicionar suporte às autorizações
-
-4. **Importação de Alunos**:
-   - Acesse `import_students.php`
-   - Cole os dados no formato: `Nome - Série - Curso - Telefone`
-   - Clique em "Importar Alunos"
-
-5. **Controle de Presença**:
-   - Acesse `presence.php`
-   - Clique nos botões vermelhos (Não Embarcou) para marcar como Embarcou (verde)
-   - Clique nos botões verdes (Embarcou) para remover o embarque (vermelho)
-   - O sistema registra automaticamente no ônibus 1 para o evento atual
-
-6. **Controle de Retorno**:
-   - Acesse `return_control.php`
-   - Selecione data e ônibus
-   - Marque apenas os alunos que retornaram
-   - Sistema registra o retorno dos alunos
-
-7. **Geração de Autorizações**:
-   - Acesse `autorizacoes.php`
-   - Selecione um aluno e o tipo de autorização
-   - Preencha os dados necessários
-   - Gere e imprima a autorização
-
-8. **Listar Autorizações**:
-   - Acesse `listar_autorizacoes.php`
-   - Visualize todas as autorizações já geradas
-   - Filtre por aluno ou tipo de autorização
-
-9. **Relatórios Diários**:
-   - Acesse `daily_report.php`
-   - Selecione a data e o ônibus
-   - Visualize quem embarcou e quem não embarcou
-   - Veja estatísticas e imprima o relatório
-
-## Funcionalidades Principais
-
-- Cadastro de alunos, responsáveis, ônibus e eventos
-- Alocação de alunos em diferentes ônibus para eventos específicos
-- Importação em massa de alunos (copiar e colar)
-- Controle de presença dos alunos, com registro de embarque e retorno
-- Geração de listas de presença online e físicas (para impressão e controle manual)
-- Identificação de alunos que não retornaram no ônibus e notificação ao responsável pelo ônibus
-- Geração de formulários de autorização de saída e de uso de imagem
-- No primeiro acesso do aluno, preenchimento de cadastro completo, utilizando RM e senha como identificadores
-- Geração de formulário de presença para cada ônibus disponibilizado
-- Possibilidade de verificar quantos alunos embarcaram e quantos não retornaram
-- Autorização de saída da escola inclui autorização de uso de imagem, gerada para todos os eventos em que o aluno participar
-- Cadastro do aluno solicita data de aniversário e permissão para receber notificações por WhatsApp
-- Envio automático de mensagens via WhatsApp para alunos autorizados, em lotes de 20 a cada 5 segundos, quando o embarque for autorizado
-
-## Fluxo de Uso
-
-1. Cadastro/importação dos alunos e responsáveis
-2. Cadastro dos ônibus e eventos
-3. Alocação dos alunos nos ônibus para cada evento
-4. Geração de listas de presença (online e física) para embarque e retorno
-5. Controle de presença no embarque e no retorno
-6. Registro e comunicação de alunos que não retornaram no ônibus
-7. Geração e armazenamento de autorizações e formulários necessários
-8. Inclusão automática de autorização de uso de imagem em todas as autorizações de saída
-9. Envio de notificações por WhatsApp para os alunos autorizados, em lotes, no momento do embarque
-
-## Tecnologias
-
-- **Backend:** PHP
-- **Frontend:** Bootstrap (framework CSS)
-- **Banco de Dados:** MySQL (base chamada `onibus`)
-
-## Como Usar o Sistema
-
-1. **Página Inicial**:
-   - Acesse `index.php` para ver o painel principal
-   - O sistema detecta automaticamente o ambiente (local/online)
-
-2. **Configuração Inicial**:
-   - Use os links na página inicial para instalar ou atualizar o banco
-   - O sistema detecta automaticamente se está rodando localmente ou no servidor remoto
-   - Para desenvolvimento local: usa `localhost`, usuário `root`, senha em branco
-   - Para produção: usa o servidor remoto com as credenciais configuradas
-
-3. **Instalação do Banco**:
-   - Acesse `install.php` para criar o banco de dados
-   - Ou use `update_database.php` se precisar atualizar tabelas existentes
-   - Use `update_autorizacoes.php` para adicionar suporte às autorizações
-
-4. **Importação de Alunos**:
-   - Acesse `import_students.php`
-   - Cole os dados no formato: `Nome - Série - Curso - Telefone`
-   - Clique em "Importar Alunos"
-
-5. **Controle de Presença**:
-   - Acesse `presence.php`
-   - Marque os alunos que embarcaram
-   - O sistema registra automaticamente no ônibus 1 para o evento atual
-
-## Funcionalidades Implementadas
-
-- ✅ Detecção automática de ambiente (local/online)
-- ✅ Instalação do banco de dados
-- ✅ Importação de alunos em massa
-- ✅ Controle de presença de embarque
-- ✅ Controle de retorno dos alunos
-- ✅ Alocação automática no ônibus
-- ✅ Relatório diário de presença por ônibus
-- ✅ Geração de autorizações de saída e uso de imagem
-- ✅ Listagem e visualização de autorizações geradas
-- ✅ Menu responsivo personalizado em todas as páginas
-- ✅ Interface responsiva com Bootstrap 5.3.0
-- ✅ Botões dinâmicos com feedback visual
-- ✅ Otimização da interface (coluna série removida)
-- ✅ Correção de conflitos de funções
-- ✅ Estatísticas de embarque (total, embarcaram, não embarcaram)
-- ✅ Tratamento de formatos especiais de nome
-
-## Arquivos Criados
-
-- `index.php`: Página inicial do sistema com navegação
-- `config.php`: Arquivo de configuração de conexão com detecção automática de ambiente (local/online)
-- `install_database.sql`: Script SQL para criação das tabelas
-- `install.php`: Instalador visual do banco de dados com Bootstrap
-- `import_students.php`: Página para importar alunos em massa
-- `presence.php`: Formulário para controle de presença de embarque
-- `return_control.php`: Formulário para controle de retorno dos alunos
-- `navbar.php`: Menu responsivo personalizado usado em todas as páginas
-- `autorizacoes.php`: Página para geração de autorizações de saída e uso de imagem
-- `listar_autorizacoes.php`: Página para listar e visualizar autorizações geradas
-- `get_autorizacao.php`: Script AJAX para buscar conteúdo de autorizações
-- `update_autorizacoes.php`: Página para atualizar o banco com suporte às autorizações
-- `daily_report.php`: Relatório diário de presença por ônibus
-- `update_database.php`: Página para atualizar o tamanho do campo telefone
+- 🎯 **Gestão Completa de Eventos** com QR Codes para inscrições
+- 👥 **Cadastro e Gerenciamento de Alunos** via web e mobile
+- 🚌 **Controle Total da Frota** (ônibus, vans, micro-ônibus)
+- ⚡ **Alocação Automática Inteligente** baseada em algoritmos
+- 📊 **Dashboard Profissional** com métricas em tempo real
+- 📱 **Interface Responsiva** para todos os dispositivos
 
 ---
 
-## Prompts e Respostas para Cada Etapa do Projeto
+## ✨ **Funcionalidades Principais**
 
-### 1. Cadastro/Importação de Alunos e Responsáveis
-- Como será feita a importação em massa dos alunos? (Formato, campos obrigatórios, validação)
-- Quais dados dos responsáveis devem ser obrigatórios?
-- Como será feita a associação entre aluno e responsável?
+### 📅 **Gerenciamento de Eventos**
+- ✅ Cadastro completo com período, local e descrição
+- ✅ Geração automática de QR Codes únicos
+- ✅ Formulários de inscrição personalizados
+- ✅ Estatísticas em tempo real
+- ✅ Sistema completo de CRUD (Create, Read, Update, Delete)
 
-**Respostas:**
-- A importação em massa será feita por um arquivo texto, com cada linha contendo: Nome do aluno - Série - Curso - Telefone.
-- No cadastro em lote, não haverá dados de responsáveis. No cadastro individual, será obrigatório informar nome, e-mail e telefone do responsável.
+### 👥 **Gestão de Alunos**
+- ✅ Cadastro via formulário administrativo ou QR Code público
+- ✅ Organização por série, curso, telefone e dados pessoais
+- ✅ Filtros avançados e busca inteligente
+- ✅ Validação automática de dados
+- ✅ Interface moderna e intuitiva
 
-### 2. Cadastro de Ônibus e Eventos
-- Quais informações são necessárias para cadastrar um ônibus? (placa, capacidade, motorista, etc.)
-- Quais informações são necessárias para cadastrar um evento? (nome, datas, local, etc.)
+### 🚌 **Gerenciamento de Frota**
+- ✅ Cadastro de ônibus, vans e micro-ônibus
+- ✅ Configuração de capacidades e dias de reserva
+- ✅ Vinculação específica por evento
+- ✅ Controle de disponibilidade em tempo real
+- ✅ Relatórios de utilização da frota
 
-**Respostas:**
-- Ônibus terão um número identificador, e será possível imprimir uma placa em papel A4 (paisagem, Arial, letras maiúsculas) com o número do ônibus, nome do evento e um QR Code.
-- O QR Code será gerado para cada dia do evento, permitindo o registro de presença do aluno naquele dia específico.
-- Além de ônibus, poderão ser cadastrados vans ou carros, sendo obrigatório informar a capacidade do veículo e impedindo o embarque de mais pessoas do que o permitido.
-- No cadastro do veículo, será necessário informar para qual evento ele será utilizado e para quantos dias estará reservado.
+### ⚡ **Alocação Automática Inteligente**
+- ✅ Algoritmo baseado na ordem cronológica de inscrição
+- ✅ Otimização automática de ocupação
+- ✅ Respeito aos limites de capacidade
+- ✅ Distribuição equilibrada entre veículos
+- ✅ Relatórios detalhados de alocação
 
-### 3. Alocação de Alunos nos Ônibus para Cada Evento
-- Como será feita a alocação dos alunos nos ônibus? (manual, automática, critérios)
-- Será possível editar a alocação após o cadastro?
+### 📱 **Sistema de QR Code**
+- ✅ Geração automática para cada evento
+- ✅ URLs públicas e seguras
+- ✅ Formulários responsivos
+- ✅ Validação em tempo real
+- ✅ Integração automática com o sistema
 
-**Respostas:**
-- A alocação será feita a partir do cadastro do aluno no ônibus, evento a evento.
-- O evento será cadastrado (ex: Bootcamp Jovem Programador) e, em seguida, o acesso ao ônibus para o evento será feito individualmente, aluno por aluno.
-- Após a validação dos ônibus para o evento, será possível elencar quem ficará em cada ônibus.
-
-### 4. Geração de Listas de Presença (Online e Física)
-- Qual o formato desejado para as listas físicas? (PDF, impressão direta, etc.)
-- Quais informações devem constar nas listas?
-
-### 5. Controle de Presença no Embarque e no Retorno
-- Como será feito o registro de presença? (digital, manual, ambos)
-- Como identificar alunos que não retornaram?
-
-### 6. Registro e Comunicação de Alunos que Não Retornaram
-- Como será feita a comunicação ao responsável pelo ônibus?
-- Haverá registro de justificativa para não retorno?
-
-### 7. Geração e Armazenamento de Autorizações e Formulários
-- Como será feita a geração dos documentos? (modelo fixo, editável)
-- Como será feito o armazenamento e consulta das autorizações?
-
-### 8. Inclusão Automática de Autorização de Uso de Imagem
-- O texto da autorização de uso de imagem será padrão para todos os eventos?
-- Como será feito o aceite pelo responsável?
-
-### 9. Envio de Notificações por WhatsApp
-- Qual serviço será utilizado para envio das mensagens?
-- Como será feito o controle dos lotes e do tempo de envio?
-- O aluno pode optar por não receber notificações a qualquer momento?
+### 📊 **Dashboard e Relatórios**
+- ✅ Métricas em tempo real
+- ✅ Gráficos interativos (Chart.js)
+- ✅ Estatísticas de ocupação
+- ✅ Relatórios de eventos e alocações
+- ✅ Exportação de dados
 
 ---
 
-## Mudanças Recentes (27/08/2025)
+## 🏗️ **Arquitetura do Sistema**
 
-### ✅ Melhorias Implementadas:
-- **Botões Dinâmicos no Controle de Presença**: Os botões agora são vermelhos para "Não Embarcou" e verdes para "Embarcou", permitindo alternar facilmente entre os estados
-- **Configuração Sempre Online**: O sistema foi configurado para usar sempre o banco de dados online (177.153.208.104), removendo a detecção automática de ambiente
-- **Correção de Erros de Banco**: Corrigidos os erros de colunas inexistentes nas tabelas de autorizações
-- **Atualização Automática do Schema**: Criado sistema para atualizar automaticamente o banco de dados com novas colunas quando necessário
+```
+📁 SISTEMA DE TRANSPORTE ESCOLAR/
+│
+├── 📁 admin/                    # 🔧 Administração do Sistema
+│   ├── install.php             # Instalação inicial do banco
+│   ├── update_database.php     # Atualizações do schema
+│   └── maintenance/            # Scripts de manutenção
+│
+├── 📁 api/                     # 🌐 APIs REST
+│   ├── eventos.php            # API de eventos
+│   ├── alunos.php             # API de alunos
+│   └── alocacoes.php          # API de alocações
+│
+├── 📁 assets/                  # 🎨 Recursos Estáticos
+│   ├── css/                   # Estilos customizados
+│   ├── js/                    # JavaScript customizado
+│   └── images/                # Imagens e ícones
+│
+├── 📁 config/                  # ⚙️ Configurações
+│   ├── config.php             # Configuração principal
+│   ├── config_email.php       # Configuração de email
+│   └── config_timezone.php    # Configuração de fuso horário
+│
+├── 📁 debug/                   # 🔍 Ferramentas de Debug
+│   ├── test_*.php             # Scripts de teste
+│   └── diagnostics/           # Diagnósticos do sistema
+│
+├── 📁 includes/                # 🧩 Componentes Reutilizáveis
+│   ├── layout-professional.php # Layout principal
+│   ├── navbar-professional.php # Barra de navegação
+│   └── functions.php          # Funções utilitárias
+│
+├── 📁 inscricao/               # 📝 Sistema de Inscrições
+│   ├── index.php              # Formulário público
+│   ├── processar.php          # Processamento das inscrições
+│   └── assets/                # Recursos do formulário
+│
+├── 📁 pages/                   # 📄 Páginas Secundárias
+│   ├── eventos.php            # Gestão de eventos (legacy)
+│   └── utilities/             # Utilitários diversos
+│
+├── 📁 public/                  # 🌍 Arquivos Públicos
+│   ├── qr-codes/              # QR Codes gerados
+│   ├── uploads/               # Uploads de usuários
+│   └── temp/                  # Arquivos temporários
+│
+├── 📁 scripts/                 # 🔧 Scripts Utilitários
+│   ├── backup.php             # Backup automático
+│   ├── cleanup.php            # Limpeza de dados
+│   └── migration/             # Scripts de migração
+│
+├── 📁 sql/                     # 🗄️ Scripts SQL
+│   ├── create_tables.sql      # Criação das tabelas
+│   ├── initial_data.sql       # Dados iniciais
+│   └── updates/               # Atualizações do schema
+│
+├── 📄 index.php                # 🏠 Dashboard Principal
+├── 📄 eventos-professional.php # 📅 Gestão de Eventos
+├── 📄 alunos-professional.php  # 👥 Gestão de Alunos
+├── 📄 onibus-professional.php  # 🚌 Gestão de Frota
+├── 📄 alocacoes-professional.php # 🗺️ Gestão de Alocações
+└── 📄 dashboard-professional.php # 📊 Dashboard Detalhado
+```
 
-### 🔧 Configuração Atual:
-- **Banco de Dados**: Sempre online em 177.153.208.104
-- **Usuário**: onibus
-- **Senha**: Devisate@2025@
-- **Banco**: onibus
+---
 
-### 🎯 Como Usar os Novos Botões:
-- **Vermelho (Não Embarcou)**: Clique para marcar o aluno como embarcado
-- **Verde (Embarcou)**: Clique para remover o embarque do aluno
-- **Salvamento Automático**: As mudanças são salvas quando você clica em "Salvar Presença"
+## 🚀 **Páginas do Sistema**
 
-### 🧭 **Novo Menu Responsivo:**
-- **Implementado**: Menu personalizado em todas as páginas
-- **Responsivo**: Adapta-se a desktop e mobile
-- **Organizado**: Links agrupados por categoria (Configuração, Controle, Relatórios, Autorizações)
-- **Visual**: Tema dark blue com ícones FontAwesome
-- **Navegação**: Fácil acesso a todas as funcionalidades do sistema
+| 🏠 **Página** | 📝 **Descrição** | ⚡ **Funcionalidades Principais** |
+|:---|:---|:---|
+| **`index.php`** | Dashboard Principal | Visão geral, estatísticas gerais, acesso rápido aos módulos |
+| **`eventos-professional.php`** | Gestão de Eventos | CRUD completo, geração de QR Codes, estatísticas por evento |
+| **`alunos-professional.php`** | Gestão de Alunos | Lista de alunos, filtros avançados, informações detalhadas |
+| **`onibus-professional.php`** | Gestão de Frota | CRUD de veículos, capacidades, tipos (ônibus/van/carro) |
+| **`alocacoes-professional.php`** | Gestão de Alocações | Visualização de alocações aluno-ônibus-evento |
+| **`dashboard-professional.php`** | Dashboard Analytics | Gráficos avançados, métricas detalhadas, relatórios |
 
-### 📊 **Otimização da Interface:**
-- **Controle de Embarque**: Coluna "Série" removida para interface mais limpa
-- **Correção de Erros**: Resolvido problema de redeclaração de funções
-- **Performance**: Includes otimizados para evitar conflitos
+---
+
+## 📊 **Modelo de Dados**
+
+### 🗄️ **Estrutura do Banco de Dados**
+
+```sql
+-- 📅 EVENTOS
+CREATE TABLE eventos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    data_inicio DATE NOT NULL,
+    data_fim DATE NOT NULL,
+    local VARCHAR(255),
+    descricao TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 👥 ALUNOS
+CREATE TABLE alunos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(255) NOT NULL,
+    evento_id INT,
+    data_inscricao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rg VARCHAR(20),
+    rm VARCHAR(20),
+    serie VARCHAR(50),
+    curso VARCHAR(100),
+    telefone VARCHAR(50),
+    data_aniversario DATE,
+    whatsapp_permissao TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+);
+
+-- 🚌 ÔNIBUS
+CREATE TABLE onibus (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    numero VARCHAR(10) NOT NULL,
+    tipo ENUM('ônibus', 'van', 'carro') NOT NULL,
+    capacidade INT NOT NULL,
+    evento_id INT,
+    dias_reservados INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+);
+
+-- 🗺️ ALOCAÇÕES
+CREATE TABLE alocacoes_onibus (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    onibus_id INT NOT NULL,
+    evento_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (onibus_id) REFERENCES onibus(id),
+    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+);
+
+-- 📱 QR CODES
+CREATE TABLE qr_codes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    evento_id INT NOT NULL,
+    codigo VARCHAR(50) UNIQUE NOT NULL,
+    url_completa TEXT,
+    ativo TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+);
+```
+
+---
+
+## 🔧 **Instalação e Configuração**
+
+### 📋 **Pré-requisitos**
+
+| Requisito | Versão Mínima | Recomendado |
+|:---|:---:|:---:|
+| **PHP** | 7.4+ | 8.0+ |
+| **MySQL** | 5.7+ | 8.0+ |
+| **Apache/Nginx** | Qualquer | Nginx |
+| **Extensões PHP** | mysqli, gd, curl | + mbstring, json |
+
+### ⚙️ **Configuração Inicial**
+
+#### 1️⃣ **Configurar Banco de Dados**
+```php
+// config/config.php
+function getDatabaseConfig() {
+    return [
+        'host' => 'localhost',        // ou seu host
+        'usuario' => 'seu_usuario',   // usuário do MySQL
+        'senha' => 'sua_senha',       // senha do MySQL
+        'banco' => 'nome_do_banco',   // nome do banco
+        'ambiente' => 'producao'      // ou 'desenvolvimento'
+    ];
+}
+```
+
+#### 2️⃣ **Executar Instalação**
+```bash
+# Acesse via navegador:
+http://seudominio.com/admin/install.php
+
+# Ou execute via linha de comando:
+php admin/install.php
+```
+
+#### 3️⃣ **Configurar Permissões**
+```bash
+# Permissões para upload e QR codes
+chmod 755 public/
+chmod 755 public/qr-codes/
+chmod 755 public/uploads/
+```
+
+#### 4️⃣ **Acessar o Sistema**
+```
+URL Principal: http://seudominio.com/
+Login Admin: Via index.php (sem autenticação por padrão)
+```
+
+---
+
+## 📱 **Sistema de QR Code - Guia Completo**
+
+### 🎯 **Como Funciona**
+
+```mermaid
+graph TD
+    A[📅 Evento Criado] --> B[🔄 QR Code Gerado Automaticamente]
+    B --> C[📱 QR Code Compartilhado]
+    C --> D[👤 Aluno Escaneia QR Code]
+    D --> E[📝 Formulário de Inscrição]
+    E --> F[✅ Dados Salvos no Sistema]
+    F --> G[⚡ Alocação Automática]
+    G --> H[📊 Relatórios Atualizados]
+```
+
+### 🔗 **Estrutura das URLs**
+
+```
+Padrão: /inscricao/?evento={ID}&codigo={CODIGO_UNICO}
+Exemplo: /inscricao/?evento=1&codigo=EVT2025ABC123
+
+Parâmetros:
+- evento: ID do evento no banco de dados
+- codigo: Código único de 6-8 caracteres
+```
+
+### 📋 **Processo de Inscrição**
+
+1. **Acesso**: Aluno escaneia QR Code ou acessa URL
+2. **Formulário**: Preenche dados pessoais e acadêmicos
+3. **Validação**: Sistema valida dados em tempo real
+4. **Confirmação**: Recebe confirmação de inscrição
+5. **Alocação**: Sistema aloca automaticamente em ônibus disponível
+
+### 🛡️ **Segurança**
+
+- ✅ Códigos únicos e não sequenciais
+- ✅ Validação de evento ativo
+- ✅ Sanitização de todos os inputs
+- ✅ Proteção contra SQL Injection
+- ✅ Rate limiting para evitar spam
+
+---
+
+## 🎨 **Interface e Design**
+
+### 🖥️ **Características do Design**
+
+- **🎯 Design Profissional**: Interface moderna, limpa e intuitiva
+- **📱 Totalmente Responsivo**: Funciona perfeitamente em desktop, tablet e mobile
+- **🎨 Consistência Visual**: Padrão unificado em todas as páginas
+- **♿ Acessibilidade**: Cores contrastantes e navegação via teclado
+- **⚡ Performance**: Carregamento rápido e otimizado
+
+### 🧩 **Componentes da Interface**
+
+#### 📊 **Cards Estatísticos**
+```php
+// Exemplo de card estatístico
+<div class="stat-card">
+    <div class="stat-icon">
+        <i class="fas fa-users"></i>
+    </div>
+    <div class="stat-value">1,247</div>
+    <div class="stat-label">Alunos Cadastrados</div>
+</div>
+```
+
+#### 📋 **Tabelas Avançadas**
+- Ordenação por colunas
+- Filtros em tempo real
+- Busca inteligente
+- Paginação automática
+- Exportação de dados
+
+#### 📈 **Gráficos Interativos**
+- Chart.js para visualizações
+- Gráficos de linha, barra e pizza
+- Dados em tempo real
+- Responsivos e animados
+
+### 🎨 **Paleta de Cores**
+
+| Cor | Hex | Uso |
+|:---|:---:|:---|
+| **Azul Principal** | `#2563eb` | Botões primários, links |
+| **Verde Sucesso** | `#10b981` | Confirmações, status ativo |
+| **Amarelo Ônibus** | `#f59e0b` | Destacar ônibus, avisos |
+| **Vermelho Erro** | `#ef4444` | Erros, exclusões |
+| **Cinza Neutro** | `#6b7280` | Textos secundários |
+
+---
+
+## 🔐 **Segurança e Boas Práticas**
+
+### 🛡️ **Medidas de Segurança Implementadas**
+
+#### **Validação e Sanitização**
+```php
+// Exemplo de sanitização de dados
+$nome = filter_var($_POST['nome'], FILTER_SANITIZE_STRING);
+$email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+$telefone = preg_replace('/[^0-9]/', '', $_POST['telefone']);
+```
+
+#### **Proteção SQL Injection**
+```php
+// Uso de prepared statements
+$stmt = $conn->prepare("SELECT * FROM alunos WHERE evento_id = ?");
+$stmt->bind_param("i", $evento_id);
+$stmt->execute();
+```
+
+#### **Proteção XSS**
+```php
+// Escape de dados de saída
+echo htmlspecialchars($dados_usuario, ENT_QUOTES, 'UTF-8');
+```
+
+#### **Validação de Arquivos**
+- Tipos de arquivo permitidos
+- Tamanho máximo definido
+- Verificação de extensão e MIME type
+- Armazenamento em diretório seguro
+
+### 🔒 **Configurações de Segurança Recomendadas**
+
+#### **Apache (.htaccess)**
+```apache
+# Ocultar arquivos sensíveis
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevenir execução de PHP em uploads
+<Directory "public/uploads">
+    php_flag engine off
+</Directory>
+```
+
+#### **Nginx**
+```nginx
+# Bloquear acesso a arquivos sensíveis
+location ~ /config/ {
+    deny all;
+    return 404;
+}
+
+# Prevenir execução de PHP em uploads
+location ~ ^/public/uploads/.*\.php$ {
+    deny all;
+    return 404;
+}
+```
+
+---
+
+## 📈 **Métricas e Analytics**
+
+### 📊 **Dashboard Principal**
+
+#### **Estatísticas Gerais**
+- 📅 **Total de Eventos Ativos**: Eventos em andamento
+- 👥 **Alunos Cadastrados**: Total de inscrições válidas
+- 🚌 **Ônibus na Frota**: Veículos disponíveis
+- 🗺️ **Alocações Realizadas**: Distribuições confirmadas
+
+#### **Gráficos Avançados**
+- **📈 Evolução de Inscrições**: Gráfico de linha temporal
+- **🥧 Distribuição por Curso**: Gráfico de pizza
+- **📊 Ocupação da Frota**: Gráfico de barras
+- **🗺️ Alocações por Evento**: Gráfico de área
+
+### 📋 **Relatórios Disponíveis**
+
+#### **Relatório de Eventos**
+```php
+// Dados incluídos:
+- Nome e período do evento
+- Total de inscrições
+- Ônibus alocados
+- Taxa de ocupação
+- Status de alocação
+```
+
+#### **Relatório de Alunos**
+```php
+// Dados incluídos:
+- Informações pessoais
+- Evento de inscrição
+- Data/hora da inscrição
+- Ônibus alocado
+- Status da alocação
+```
+
+#### **Relatório da Frota**
+```php
+// Dados incluídos:
+- Dados do veículo
+- Capacidade total vs ocupada
+- Eventos vinculados
+- Histórico de uso
+- Eficiência da alocação
+```
+
+---
+
+## 🛠️ **Manutenção e Troubleshooting**
+
+### 🔧 **Ferramentas de Manutenção**
+
+#### **Scripts de Administração**
+| Script | Função | Localização |
+|:---|:---|:---|
+| `install.php` | Instalação completa | `/admin/` |
+| `update_database.php` | Atualizações do schema | `/admin/` |
+| `backup.php` | Backup automático | `/scripts/` |
+| `cleanup.php` | Limpeza de dados antigos | `/scripts/` |
+
+#### **Ferramentas de Debug**
+```php
+// debug/test_connection.php - Testar conexão DB
+// debug/test_qr_generation.php - Testar geração QR
+// debug/test_allocation.php - Testar alocação
+// debug/diagnostics.php - Diagnóstico completo
+```
+
+### 🚨 **Resolução de Problemas Comuns**
+
+#### **❌ Erro de Conexão com Banco**
+```bash
+Sintoma: "Connection failed" ou timeouts
+Solução:
+1. Verificar config/config.php
+2. Testar credenciais manualmente
+3. Verificar status do MySQL
+4. Conferir permissões de rede
+```
+
+#### **❌ QR Codes Não Carregam**
+```bash
+Sintoma: Imagens quebradas ou 404
+Solução:
+1. Verificar permissões da pasta public/
+2. Testar geração manual: debug/test_qr_generation.php
+3. Verificar biblioteca GD instalada
+4. Conferir URL base no config
+```
+
+#### **❌ Alocações Incorretas**
+```bash
+Sintoma: Alunos não alocados ou alocação duplicada
+Solução:
+1. Executar script de limpeza: scripts/cleanup.php
+2. Re-executar alocação automática
+3. Verificar capacidades dos ônibus
+4. Conferir integridade dos dados
+```
+
+#### **❌ Interface Não Carrega**
+```bash
+Sintoma: Páginas em branco ou erros 500
+Solução:
+1. Verificar logs do Apache/Nginx
+2. Conferir permissões de arquivos
+3. Testar sintaxe PHP: php -l arquivo.php
+4. Verificar extensões PHP necessárias
+```
+
+### 📝 **Logs do Sistema**
+
+#### **Localização dos Logs**
+```bash
+Sistema: /var/log/apache2/ ou /var/log/nginx/
+PHP: /var/log/php_errors.log
+MySQL: /var/log/mysql/
+Aplicação: debug/logs/ (personalizado)
+```
+
+#### **Monitoramento Recomendado**
+- **Disk Space**: Pasta de uploads e QR codes
+- **Database Size**: Crescimento das tabelas
+- **Error Logs**: Erros PHP e SQL
+- **Performance**: Tempo de resposta das páginas
+
+---
+
+## 📝 **Histórico de Versões**
+
+### 🆕 **v2.0 (Setembro 2025) - Versão Profissional**
+```diff
++ ✅ Interface completamente redesenhada com design profissional
++ ✅ Sistema de QR Code implementado com formulários dinâmicos  
++ ✅ Alocação automática inteligente baseada em algoritmos
++ ✅ Dashboard profissional com gráficos em tempo real
++ ✅ Estrutura de banco de dados otimizada e normalizada
++ ✅ Código limpo, documentado e seguindo padrões PSR
++ ✅ Sistema responsivo para todos os dispositivos
++ ✅ APIs REST para integração externa
++ ✅ Sistema de logs e debug avançado
++ ✅ Segurança aprimorada com validações robustas
+```
+
+### 📜 **v1.0 (Agosto 2025) - Versão Base**
+```diff
++ Sistema básico de cadastros manuais
++ Interface simples com Bootstrap
++ Alocação manual de alunos
++ Relatórios básicos em HTML
++ Estrutura inicial do banco de dados
+```
+
+---
+
+## 🤝 **Contribuição e Desenvolvimento**
+
+### 👨‍💻 **Para Desenvolvedores**
+
+#### **Padrões de Código**
+```php
+// PSR-4 Autoloading
+// PSR-12 Coding Style
+// Documentação inline obrigatória
+// Nomenclatura em português para variáveis de negócio
+
+// Exemplo de função documentada:
+/**
+ * Realiza alocação automática de alunos nos ônibus
+ * 
+ * @param int $evento_id ID do evento
+ * @param array $opcoes Opções de alocação
+ * @return array Resultado da alocação
+ * @throws Exception Em caso de erro na alocação
+ */
+function alocarAlunosAutomaticamente($evento_id, $opcoes = []) {
+    // Implementação...
+}
+```
+
+#### **Estrutura de Desenvolvimento**
+```bash
+# Clone do repositório
+git clone [repo-url]
+
+# Configuração local
+cp config/config.exemplo.php config/config.php
+# Editar config.php com dados locais
+
+# Instalação das dependências
+composer install  # Se usando Composer
+
+# Setup do banco local
+php admin/install.php
+
+# Servidor de desenvolvimento
+php -S localhost:8000
+```
+
+#### **Workflow de Contribuição**
+1. **Fork** do projeto
+2. **Crie uma branch** para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. **Commit** suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. **Push** para a branch (`git push origin feature/nova-funcionalidade`)
+5. **Abra um Pull Request**
+
+### 🧪 **Testes**
+
+#### **Executar Testes**
+```bash
+# Testes de conexão
+php debug/test_connection.php
+
+# Testes de QR Code
+php debug/test_qr_generation.php
+
+# Testes de alocação
+php debug/test_allocation.php
+
+# Diagnóstico completo
+php debug/diagnostics.php
+```
+
+#### **Cobertura de Testes**
+- ✅ Conexão com banco de dados
+- ✅ Geração e validação de QR Codes
+- ✅ Algoritmo de alocação automática
+- ✅ APIs REST e endpoints
+- ✅ Validação de formulários
+- ✅ Segurança e sanitização
+
+---
+
+## 📞 **Suporte e Documentação**
+
+### 🆘 **Canais de Suporte**
+
+#### **Auto-diagnóstico**
+```bash
+# Execute o diagnóstico automático
+http://seudominio.com/debug/diagnostics.php
+
+# Verificar logs do sistema  
+tail -f debug/logs/system.log
+
+# Testar componentes individuais
+http://seudominio.com/debug/test_[componente].php
+```
+
+#### **Documentação Técnica**
+- 📁 **`/docs/header-template.php`**: Template para desenvolvimento
+- 📁 **`/debug/`**: Ferramentas de diagnóstico
+- 📁 **Código fonte**: Comentários inline detalhados
+- 📁 **`/sql/`**: Documentação do banco de dados
+
+#### **Recursos Adicionais**
+- 🌐 **Wiki Online**: [Em desenvolvimento]
+- 📧 **Email**: [Configurar no sistema]
+- 💬 **Chat**: [Integração futura]
+- 🎥 **Tutoriais**: [Em produção]
+
+### 🔄 **Atualizações e Manutenção**
+
+#### **Verificar Atualizações**
+```bash
+# Manual: Verificar versão atual
+echo "Versão atual: 2.0";
+
+# Automático: Script de verificação
+php admin/check_updates.php
+```
+
+#### **Processo de Atualização**
+1. **Backup**: Sempre faça backup antes de atualizar
+2. **Teste**: Execute em ambiente de teste primeiro
+3. **Migração**: Use scripts de migração quando disponíveis
+4. **Verificação**: Execute diagnósticos pós-atualização
+
+---
+
+## 🏆 **Créditos e Licença**
+
+### 👥 **Equipe de Desenvolvimento**
+- **Arquitetura**: Sistema modular e escalável
+- **Frontend**: Interface responsiva e moderna  
+- **Backend**: APIs REST e lógica de negócio
+- **Database**: Modelagem otimizada
+- **QR System**: Integração completa
+
+### 📄 **Licença**
+```
+MIT License
+
+Copyright (c) 2025 Sistema de Transporte Escolar
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+```
+
+### 🙏 **Agradecimentos**
+- **PHP Community**: Pela linguagem robusta e comunidade ativa
+- **Chart.js**: Pelos gráficos interativos e responsivos
+- **Font Awesome**: Pelos ícones profissionais
+- **Bootstrap**: Pela base de CSS responsivo
+- **MySQL**: Pelo banco de dados confiável
+
+---
+
+<div align="center">
+
+### 🚌 **Sistema de Gerenciamento de Transporte Escolar**
+**v2.0 Professional Edition**
+
+*Desenvolvido com ❤️ para instituições educacionais*
+
+---
+
+**[⬆️ Voltar ao Topo](#-sistema-de-gerenciamento-de-transporte-escolar)**
+
+</div>

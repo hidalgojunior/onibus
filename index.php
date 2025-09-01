@@ -1,21 +1,29 @@
 <?php
-$current_page = "home";
-include 'includes/page-layout.php';
+// Configurações da página
+$page_title = "Dashboard";
+$page_description = "Painel de Controle - Gestão de Transporte Escolar";
 
-// Incluir configuração
+// Incluir configuração do banco
 include 'config/config.php';
 
-// Obter estatísticas do sistema
+// Conectar ao banco e buscar dados reais
 $conn = getDatabaseConnection();
 $stats = [
     'total_alunos' => 0,
-    'total_eventos' => 0,
+    'alunos_ativos' => 0,
+    'eventos_ativos' => 0,
     'total_onibus' => 0,
-    'alocacoes_hoje' => 0,
-    'alunos_presentes_hoje' => 0,
-    'alunos_faltaram_hoje' => 0,
-    'eventos_ativos' => [],
-    'ultimas_presencas' => []
+    'presencas_hoje' => 0,
+    'alocacoes_ativas' => 0,
+    'qr_codes_gerados' => 0,
+    'autorizacoes_pendentes' => 0
+];
+
+$charts_data = [
+    'presencas_semana' => [],
+    'eventos_status' => [],
+    'alocacoes_onibus' => [],
+    'alunos_evolucao' => []
 ];
 
 if (!$conn->connect_error) {
@@ -23,464 +31,613 @@ if (!$conn->connect_error) {
     $result = $conn->query("SELECT COUNT(*) as total FROM alunos");
     if ($result) $stats['total_alunos'] = $result->fetch_assoc()['total'];
     
-    // Total de eventos ativos
-    $data_hoje = date('Y-m-d');
-    $result = $conn->query("SELECT COUNT(*) as total FROM eventos WHERE data_fim >= '$data_hoje'");
-    if ($result) $stats['total_eventos'] = $result->fetch_assoc()['total'];
+    // Alunos ativos (todos os alunos cadastrados)
+    $stats['alunos_ativos'] = $stats['total_alunos'];
+    
+    // Eventos ativos
+    $result = $conn->query("SELECT COUNT(*) as total FROM eventos WHERE data_fim >= CURDATE() OR data_fim IS NULL");
+    if ($result) $stats['eventos_ativos'] = $result->fetch_assoc()['total'];
     
     // Total de ônibus
     $result = $conn->query("SELECT COUNT(*) as total FROM onibus");
     if ($result) $stats['total_onibus'] = $result->fetch_assoc()['total'];
     
-    // Alocações hoje
-    $result = $conn->query("SELECT COUNT(*) as total FROM alocacoes_onibus ao 
-                           JOIN eventos e ON ao.evento_id = e.id 
-                           WHERE DATE(e.data_inicio) = '$data_hoje'");
-    if ($result) $stats['alocacoes_hoje'] = $result->fetch_assoc()['total'];
+    // Presenças de hoje
+    $result = $conn->query("SELECT COUNT(*) as total FROM presencas WHERE DATE(data) = CURDATE()");
+    if ($result) $stats['presencas_hoje'] = $result->fetch_assoc()['total'];
     
-    // Buscar eventos ativos para exibição
-    $result = $conn->query("SELECT id, nome, data_inicio, data_fim
-        FROM eventos 
-        WHERE data_fim >= '$data_hoje' 
-        ORDER BY data_inicio ASC LIMIT 3");
+    // Alocações ativas
+    $result = $conn->query("SELECT COUNT(*) as total FROM alocacoes_onibus");
+    if ($result) $stats['alocacoes_ativas'] = $result->fetch_assoc()['total'];
+    
+    // QR Codes gerados
+    $result = $conn->query("SELECT COUNT(*) as total FROM qr_codes");
+    if ($result) $stats['qr_codes_gerados'] = $result->fetch_assoc()['total'];
+    
+    // Autorizações pendentes (todas as autorizações)
+    $result = $conn->query("SELECT COUNT(*) as total FROM autorizacoes");
+    if ($result) $stats['autorizacoes_pendentes'] = $result->fetch_assoc()['total'];
+    
+    // Dados para gráfico de presenças da semana
+    $result = $conn->query("
+        SELECT DATE(data) as data_presenca, COUNT(*) as total 
+        FROM presencas 
+        WHERE data >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        GROUP BY DATE(data)
+        ORDER BY data_presenca
+    ");
     if ($result) {
-        while ($evento = $result->fetch_assoc()) {
-            $stats['eventos_ativos'][] = $evento;
+        while ($row = $result->fetch_assoc()) {
+            $charts_data['presencas_semana'][] = [
+                'data' => date('d/m', strtotime($row['data_presenca'])),
+                'total' => intval($row['total'])
+            ];
+        }
+    }
+    
+    // Dados para gráfico de status dos eventos
+    $result = $conn->query("
+        SELECT 
+            CASE 
+                WHEN data_fim >= CURDATE() THEN 'ativo'
+                WHEN data_fim < CURDATE() THEN 'finalizado'
+                ELSE 'programado'
+            END as status,
+            COUNT(*) as total
+        FROM eventos 
+        GROUP BY status
+    ");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $charts_data['eventos_status'][] = [
+                'status' => $row['status'],
+                'total' => intval($row['total'])
+            ];
+        }
+    }
+    
+    // Dados para gráfico de alocações por ônibus
+    $result = $conn->query("
+        SELECT o.numero as onibus, COUNT(ao.id) as alocacoes
+        FROM onibus o
+        LEFT JOIN alocacoes_onibus ao ON o.id = ao.onibus_id
+        GROUP BY o.id, o.numero
+        ORDER BY o.numero
+    ");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $charts_data['alocacoes_onibus'][] = [
+                'onibus' => 'Ônibus ' . $row['onibus'],
+                'alocacoes' => intval($row['alocacoes'])
+            ];
+        }
+    }
+    
+    // Dados para evolução de alunos (últimos 6 meses)
+    $result = $conn->query("
+        SELECT 
+            DATE_FORMAT(created_at, '%Y-%m') as mes,
+            COUNT(*) as novos_alunos
+        FROM alunos 
+        WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
+        GROUP BY mes
+        ORDER BY mes
+    ");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $charts_data['alunos_evolucao'][] = [
+                'mes' => date('M/y', strtotime($row['mes'] . '-01')),
+                'total' => intval($row['novos_alunos'])
+            ];
         }
     }
 }
 
-// Obter estatísticas para o header
-$stats_header = [
-    ['number' => $stats['total_eventos'] ?? 0, 'label' => 'Eventos Ativos'],
-    ['number' => $stats['total_alunos'] ?? 0, 'label' => 'Alunos Cadastrados'],
-    ['number' => $stats['total_onibus'] ?? 0, 'label' => 'Ônibus na Frota'],
-    ['number' => $stats['alocacoes_hoje'] ?? 0, 'label' => 'Alocações Hoje']
-];
+$custom_css = '
+/* Dashboard Específico */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
 
-// Configuração do breadcrumb
-$breadcrumb = [
-    ['label' => 'Dashboard']
-];
+.stat-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
 
-// Ações do header
-$actions = [
-    [
-        'url' => 'pages/eventos.php', 
-        'icon' => 'fas fa-calendar-plus', 
-        'label' => 'Novo Evento'
-    ],
-    [
-        'url' => 'pages/onibus.php', 
-        'icon' => 'fas fa-bus', 
-        'label' => 'Gerenciar Frota'
-    ]
-];
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
 
-// Renderizar header simplificado
-renderHeader("Dashboard", null, [
-    'icon' => 'fas fa-tachometer-alt'
-]);
+.stat-card.success { border-left-color: var(--success-color); }
+.stat-card.warning { border-left-color: var(--warning-color); }
+.stat-card.danger { border-left-color: var(--danger-color); }
+.stat-card.info { border-left-color: var(--accent-color); }
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+.stat-icon.success { background: linear-gradient(135deg, var(--success-color), #38a169); }
+.stat-icon.warning { background: linear-gradient(135deg, var(--warning-color), #d69e2e); }
+.stat-icon.danger { background: linear-gradient(135deg, var(--danger-color), #e53e3e); }
+.stat-icon.info { background: linear-gradient(135deg, var(--accent-color), #3182ce); }
+
+.stat-content h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 0.5rem 0;
+    line-height: 1;
+}
+
+.stat-content p {
+    color: var(--text-gray);
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.trend-positive {
+    color: var(--success-color);
+}
+
+.trend-negative {
+    color: var(--danger-color);
+}
+
+.trend-neutral {
+    color: var(--text-gray);
+}
+
+.charts-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-large {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.chart-small {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 0.5rem 0;
+}
+
+.chart-subtitle {
+    color: var(--text-gray);
+    font-size: 0.875rem;
+    margin: 0 0 2rem 0;
+}
+
+.chart-canvas {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-canvas canvas {
+    max-height: 300px !important;
+}
+
+.bottom-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.quick-stat-item {
+    background: var(--light-gray);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.quick-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.quick-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .charts-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .bottom-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
+';
+
+$custom_js = '
+// Dados dos gráficos vindos do PHP
+const presencasData = ' . json_encode($charts_data['presencas_semana']) . ';
+const eventosData = ' . json_encode($charts_data['eventos_status']) . ';
+const alocacoesData = ' . json_encode($charts_data['alocacoes_onibus']) . ';
+const alunosData = ' . json_encode($charts_data['alunos_evolucao']) . ';
+
+// Configurações globais do Chart.js
+Chart.defaults.font.family = "Inter, sans-serif";
+Chart.defaults.color = "#718096";
+
+// Gráfico de Presenças da Semana
+const ctxPresencas = document.getElementById("presencasChart");
+if (ctxPresencas && presencasData.length > 0) {
+    new Chart(ctxPresencas, {
+        type: "line",
+        data: {
+            labels: presencasData.map(item => item.data),
+            datasets: [{
+                label: "Presenças",
+                data: presencasData.map(item => item.total),
+                borderColor: "#4299e1",
+                backgroundColor: "rgba(66, 153, 225, 0.1)",
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: "#4299e1",
+                pointBorderColor: "#ffffff",
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "rgba(45, 55, 72, 0.9)",
+                    titleColor: "#ffffff",
+                    bodyColor: "#ffffff"
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: "#f7fafc" },
+                    ticks: { color: "#718096" }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: "#718096" }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Status dos Eventos
+const ctxEventos = document.getElementById("eventosChart");
+if (ctxEventos && eventosData.length > 0) {
+    const cores = {
+        "ativo": "#38a169",
+        "finalizado": "#718096", 
+        "programado": "#4299e1"
+    };
+    
+    new Chart(ctxEventos, {
+        type: "doughnut",
+        data: {
+            labels: eventosData.map(item => item.status.charAt(0).toUpperCase() + item.status.slice(1)),
+            datasets: [{
+                data: eventosData.map(item => item.total),
+                backgroundColor: eventosData.map(item => cores[item.status] || "#718096"),
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Alocações por Ônibus
+const ctxAlocacoes = document.getElementById("alocacoesChart");
+if (ctxAlocacoes && alocacoesData.length > 0) {
+    new Chart(ctxAlocacoes, {
+        type: "bar",
+        data: {
+            labels: alocacoesData.map(item => item.onibus),
+            datasets: [{
+                label: "Alocações",
+                data: alocacoesData.map(item => item.alocacoes),
+                backgroundColor: "#4299e1",
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: "#f7fafc" },
+                    ticks: { color: "#718096" }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: "#718096" }
+                }
+            }
+        }
+    });
+}
+
+// Gráfico de Evolução de Alunos
+const ctxAlunos = document.getElementById("alunosChart");
+if (ctxAlunos && alunosData.length > 0) {
+    new Chart(ctxAlunos, {
+        type: "bar",
+        data: {
+            labels: alunosData.map(item => item.mes),
+            datasets: [{
+                label: "Novos Alunos",
+                data: alunosData.map(item => item.total),
+                backgroundColor: "#38a169",
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: "#f7fafc" },
+                    ticks: { color: "#718096" }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: "#718096" }
+                }
+            }
+        }
+    });
+}
+
+// Atualizar dados a cada 5 minutos
+setInterval(() => {
+    window.location.reload();
+}, 300000);
+';
+
+ob_start();
 ?>
 
-<!-- Container Principal -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-<!-- Hero Section -->
-<div class="bg-gradient-to-r from-azul-escuro to-azul-claro rounded-xl p-8 mb-8 text-white">
-    <div class="flex flex-col md:flex-row items-center justify-between">
-        <div class="mb-6 md:mb-0">
-            <h1 class="text-3xl md:text-4xl font-bold mb-2">Sistema de Transporte Escolar</h1>
-            <p class="text-lg opacity-90">Gerencie eventos, ônibus e alocações de forma inteligente</p>
-        </div>
-        <div class="text-center">
-            <div class="bg-white/20 backdrop-blur-sm rounded-lg p-4">
-                <i class="fas fa-bus text-4xl mb-2"></i>
-                <p class="text-sm opacity-80">Versão 2.0</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Alertas do Sistema -->
-<?php if (!$conn->connect_error): ?>
-    <?php
-    $alertas = [];
-    
-    // Verificar alunos sem alocação
-    $result = $conn->query("SELECT COUNT(DISTINCT a.id) as alunos_sem_alocacao
-        FROM alunos a
-        LEFT JOIN alocacoes_onibus ao ON a.id = ao.aluno_id
-        LEFT JOIN eventos e ON ao.evento_id = e.id AND e.data_fim >= '$data_hoje'
-        WHERE ao.id IS NULL OR e.id IS NULL");
-    
-    if ($result && $result->num_rows > 0) {
-        $sem_alocacao = $result->fetch_assoc()['alunos_sem_alocacao'];
-        if ($sem_alocacao > 0) {
-            $alertas[] = [
-                'tipo' => 'warning',
-                'titulo' => 'Alunos sem Alocação',
-                'mensagem' => "$sem_alocacao alunos não estão alocados em nenhum evento ativo.",
-                'acao' => 'pages/alocacoes.php'
-            ];
-        }
-    }
-    ?>
-
-    <?php if (!empty($alertas)): ?>
-        <div class="mb-8">
-            <?php foreach ($alertas as $alerta): ?>
-                <div class="bg-gradient-to-r from-amarelo-onibus/20 to-yellow-100 border-l-4 border-amarelo-onibus rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="bg-amarelo-onibus/20 p-3 rounded-full mr-4">
-                                <i class="fas fa-exclamation-triangle text-yellow-700 text-xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-yellow-800 text-lg"><?= $alerta['titulo'] ?></h4>
-                                <p class="text-yellow-700 mt-1"><?= $alerta['mensagem'] ?></p>
-                            </div>
-                        </div>
-                        <a href="<?= $alerta['acao'] ?>" class="bg-amarelo-onibus hover:bg-yellow-500 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                            <i class="fas fa-arrow-right mr-2"></i> Resolver
-                        </a>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-<?php endif; ?>
-
-<!-- Dashboard Estatísticas - Design Moderno -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<!-- Dashboard Statistics -->
+<div class="dashboard-stats">
     <!-- Total de Alunos -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total de Alunos</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2"><?= number_format($stats['total_alunos'] ?? 0) ?></p>
-                    <div class="flex items-center mt-2">
-                        <span class="text-green-600 text-sm font-medium">
-                            <i class="fas fa-arrow-up mr-1"></i>Ativos
-                        </span>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                    <i class="fas fa-users text-white text-2xl"></i>
-                </div>
+    <div class="stat-card success">
+        <div class="stat-header">
+            <div class="stat-content">
+                <h3><?php echo $stats['total_alunos']; ?></h3>
+                <p>Total de Alunos</p>
+            </div>
+            <div class="stat-icon success">
+                <i class="fas fa-user-graduate"></i>
             </div>
         </div>
-    </div>
-
-    <!-- Total de Eventos -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Eventos Ativos</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2"><?= number_format($stats['total_eventos'] ?? 0) ?></p>
-                    <div class="flex items-center mt-2">
-                        <span class="text-green-600 text-sm font-medium">
-                            <i class="fas fa-calendar mr-1"></i>Em andamento
-                        </span>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-verde-medio to-green-600 p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                    <i class="fas fa-calendar-alt text-white text-2xl"></i>
-                </div>
-            </div>
+        <div class="stat-trend">
+            <span class="trend-positive">
+                <i class="fas fa-arrow-up"></i>
+                <?php echo $stats['alunos_ativos']; ?> ativos
+            </span>
         </div>
     </div>
-
-    <!-- Total de Ônibus -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Ônibus na Frota</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2"><?= number_format($stats['total_onibus'] ?? 0) ?></p>
-                    <div class="flex items-center mt-2">
-                        <span class="text-blue-600 text-sm font-medium">
-                            <i class="fas fa-cog mr-1"></i>Operacionais
-                        </span>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-amarelo-onibus to-yellow-500 p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                    <i class="fas fa-bus text-white text-2xl"></i>
-                </div>
+    
+    <!-- Eventos Ativos -->
+    <div class="stat-card info">
+        <div class="stat-header">
+            <div class="stat-content">
+                <h3><?php echo $stats['eventos_ativos']; ?></h3>
+                <p>Eventos Ativos</p>
+            </div>
+            <div class="stat-icon info">
+                <i class="fas fa-calendar-alt"></i>
             </div>
         </div>
+        <div class="stat-trend">
+            <span class="trend-neutral">
+                <i class="fas fa-clock"></i>
+                Em andamento
+            </span>
+        </div>
     </div>
-
-    <!-- Total de Alocações -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 group">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Alocações Hoje</h3>
-                    <p class="text-3xl font-bold text-gray-900 mt-2"><?= number_format($stats['alocacoes_hoje'] ?? 0) ?></p>
-                    <div class="flex items-center mt-2">
-                        <span class="text-purple-600 text-sm font-medium">
-                            <i class="fas fa-map-marker-alt mr-1"></i>Confirmadas
-                        </span>
-                    </div>
-                </div>
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                    <i class="fas fa-route text-white text-2xl"></i>
-                </div>
+    
+    <!-- Frota de Ônibus -->
+    <div class="stat-card warning">
+        <div class="stat-header">
+            <div class="stat-content">
+                <h3><?php echo $stats['total_onibus']; ?></h3>
+                <p>Ônibus na Frota</p>
             </div>
+            <div class="stat-icon warning">
+                <i class="fas fa-bus"></i>
+            </div>
+        </div>
+        <div class="stat-trend">
+            <span class="trend-positive">
+                <i class="fas fa-check"></i>
+                Operacional
+            </span>
+        </div>
+    </div>
+    
+    <!-- Alocações Ativas -->
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-content">
+                <h3><?php echo $stats['alocacoes_ativas']; ?></h3>
+                <p>Alocações Ativas</p>
+            </div>
+            <div class="stat-icon">
+                <i class="fas fa-route"></i>
+            </div>
+        </div>
+        <div class="stat-trend">
+            <span class="trend-positive">
+                <i class="fas fa-users"></i>
+                Alunos alocados
+            </span>
         </div>
     </div>
 </div>
 
-<!-- Módulos do Sistema - Design Profissional -->
-<div class="mb-8">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Módulos do Sistema</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Main Charts Section -->
+<div class="charts-section">
+    <!-- Presenças da Semana -->
+    <div class="chart-large">
+        <h3 class="chart-title">Presenças da Semana</h3>
+        <p class="chart-subtitle">Controle de presença dos últimos 7 dias</p>
+        <div class="chart-canvas">
+            <canvas id="presencasChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Status dos Eventos -->
+    <div class="chart-small">
+        <h3 class="chart-title">Status dos Eventos</h3>
+        <p class="chart-subtitle">Distribuição por situação</p>
+        <div class="chart-canvas">
+            <canvas id="eventosChart"></canvas>
+        </div>
         
-        <!-- Gerenciar Eventos -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-calendar-alt text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Eventos</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat-item">
+                <div class="quick-stat-value"><?php echo $stats['presencas_hoje']; ?></div>
+                <div class="quick-stat-label">Presenças Hoje</div>
             </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Cadastrar e gerenciar eventos do sistema com QR Code para inscrições</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-users mr-2"></i>
-                    <span><?= number_format($stats['total_eventos'] ?? 0) ?> eventos ativos</span>
-                </div>
-                <a href="pages/eventos.php" class="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-plus mr-2"></i> Gerenciar Eventos
-                </a>
-            </div>
-        </div>
-
-        <!-- Gerenciar Ônibus -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-verde-medio to-green-600 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-bus text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Frota</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Cadastrar e gerenciar frota de ônibus com informações de capacidade</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-bus mr-2"></i>
-                    <span><?= number_format($stats['total_onibus'] ?? 0) ?> ônibus na frota</span>
-                </div>
-                <a href="pages/onibus.php" class="w-full bg-green-50 hover:bg-green-100 text-green-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-cog mr-2"></i> Gerenciar Frota
-                </a>
-            </div>
-        </div>
-
-        <!-- Candidaturas -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-user-graduate text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Candidaturas</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Visualizar e gerenciar inscrições recebidas via QR Code</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-clipboard-list mr-2"></i>
-                    <span>Inscrições em tempo real</span>
-                </div>
-                <a href="pages/candidaturas.php" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-list mr-2"></i> Ver Candidaturas
-                </a>
-            </div>
-        </div>
-
-        <!-- Alocação Automática -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-amarelo-onibus to-yellow-500 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-magic text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Alocação IA</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Sistema inteligente de alocação baseado na ordem de inscrição</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-robot mr-2"></i>
-                    <span>Algoritmo otimizado</span>
-                </div>
-                <a href="pages/alocacao.php" class="w-full bg-yellow-50 hover:bg-yellow-100 text-yellow-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-play mr-2"></i> Iniciar Alocação
-                </a>
-            </div>
-        </div>
-
-        <!-- Gerenciar Alocações -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-red-500 to-red-600 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-map-marked-alt text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Alocações</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Visualizar, editar e gerenciar alocações de alunos nos ônibus</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-route mr-2"></i>
-                    <span><?= number_format($stats['alocacoes_hoje'] ?? 0) ?> alocações hoje</span>
-                </div>
-                <a href="pages/alocacoes.php" class="w-full bg-red-50 hover:bg-red-100 text-red-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-edit mr-2"></i> Gerenciar
-                </a>
-            </div>
-        </div>
-
-        <!-- Sistema de Administração -->
-        <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
-            <div class="bg-gradient-to-br from-gray-600 to-gray-700 p-6 text-white">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-cogs text-3xl mb-2 opacity-90"></i>
-                        <h3 class="text-xl font-bold">Administração</h3>
-                    </div>
-                    <div class="bg-white/20 rounded-full p-2">
-                        <i class="fas fa-arrow-right text-lg"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">Configurações avançadas, relatórios e ferramentas do sistema</p>
-                <div class="flex items-center text-sm text-gray-500 mb-4">
-                    <i class="fas fa-shield-alt mr-2"></i>
-                    <span>Área administrativa</span>
-                </div>
-                <a href="#" class="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
-                    <i class="fas fa-tools mr-2"></i> Configurações
-                </a>
+            <div class="quick-stat-item">
+                <div class="quick-stat-value"><?php echo $stats['qr_codes_gerados']; ?></div>
+                <div class="quick-stat-label">QR Codes</div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Eventos Ativos e Links Úteis -->
-<?php if (!empty($stats['eventos_ativos'])): ?>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Eventos Ativos -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
-                <h3 class="text-xl font-bold flex items-center gap-3">
-                    <i class="fas fa-calendar-check text-2xl"></i>
-                    Eventos Ativos
-                </h3>
-                <p class="opacity-90 mt-1">Eventos em andamento no sistema</p>
-            </div>
-            <div class="p-6">
-                <div class="space-y-4">
-                    <?php foreach ($stats['eventos_ativos'] as $evento): ?>
-                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200">
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900"><?= htmlspecialchars($evento['nome']) ?></h4>
-                                <div class="flex items-center mt-2 text-sm text-gray-600">
-                                    <i class="fas fa-calendar mr-2 text-green-600"></i>
-                                    <span><?= date('d/m/Y', strtotime($evento['data_inicio'])) ?> - <?= date('d/m/Y', strtotime($evento['data_fim'])) ?></span>
-                                </div>
-                            </div>
-                            <a href="pages/eventos.php?id=<?= $evento['id'] ?>" 
-                               class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2">
-                                <i class="fas fa-eye"></i>
-                                <span>Ver</span>
-                            </a>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Links Úteis -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
-                <h3 class="text-xl font-bold flex items-center gap-3">
-                    <i class="fas fa-link text-2xl"></i>
-                    Links Úteis
-                </h3>
-                <p class="opacity-90 mt-1">Ferramentas administrativas</p>
-            </div>
-            <div class="p-6">
-                <div class="space-y-4">
-                    <a href="admin/install.php" 
-                       class="group block p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg border border-blue-200 hover:shadow-md transition-all duration-200">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-blue-500 p-3 rounded-lg text-white group-hover:scale-110 transition-transform duration-200">
-                                <i class="fas fa-database text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 group-hover:text-blue-700">Instalar Banco de Dados</h4>
-                                <p class="text-sm text-gray-600 mt-1">Configurar estrutura inicial do sistema</p>
-                            </div>
-                            <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform duration-200"></i>
-                        </div>
-                    </a>
-                    
-                    <a href="admin/update_database.php" 
-                       class="group block p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200 hover:shadow-md transition-all duration-200">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-green-500 p-3 rounded-lg text-white group-hover:scale-110 transition-transform duration-200">
-                                <i class="fas fa-sync text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 group-hover:text-green-700">Atualizar Sistema</h4>
-                                <p class="text-sm text-gray-600 mt-1">Aplicar atualizações e correções pendentes</p>
-                            </div>
-                            <i class="fas fa-arrow-right text-green-500 group-hover:translate-x-1 transition-transform duration-200"></i>
-                        </div>
-                    </a>
-                    
-                    <a href="debug/" 
-                       class="group block p-4 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg border border-yellow-200 hover:shadow-md transition-all duration-200">
-                        <div class="flex items-center gap-4">
-                            <div class="bg-yellow-500 p-3 rounded-lg text-white group-hover:scale-110 transition-transform duration-200">
-                                <i class="fas fa-bug text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 group-hover:text-yellow-700">Ferramentas de Debug</h4>
-                                <p class="text-sm text-gray-600 mt-1">Diagnóstico e monitoramento do sistema</p>
-                            </div>
-                            <i class="fas fa-arrow-right text-yellow-500 group-hover:translate-x-1 transition-transform duration-200"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+<!-- Bottom Charts -->
+<div class="bottom-charts">
+    <!-- Alocações por Ônibus -->
+    <div class="chart-large">
+        <h3 class="chart-title">Alocações por Ônibus</h3>
+        <p class="chart-subtitle">Distribuição de alunos por veículo</p>
+        <div class="chart-canvas">
+            <canvas id="alocacoesChart"></canvas>
         </div>
     </div>
+    
+    <!-- Evolução de Cadastros -->
+    <div class="chart-large">
+        <h3 class="chart-title">Novos Alunos</h3>
+        <p class="chart-subtitle">Cadastros nos últimos meses</p>
+        <div class="chart-canvas">
+            <canvas id="alunosChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Sistema de Alertas -->
+<?php if ($stats['autorizacoes_pendentes'] > 0): ?>
+<div class="chart-large" style="margin-top: 2rem;">
+    <div style="background: rgba(214, 158, 46, 0.1); border-left: 4px solid var(--warning-color); padding: 1rem; border-radius: 8px;">
+        <h4 style="color: var(--warning-color); margin: 0 0 0.5rem 0;">
+            <i class="fas fa-exclamation-triangle"></i>
+            Atenção Necessária
+        </h4>
+        <p style="margin: 0; color: var(--text-dark);">
+            Existem <strong><?php echo $stats['autorizacoes_pendentes']; ?> autorizações pendentes</strong> aguardando aprovação.
+        </p>
+    </div>
+</div>
 <?php endif; ?>
 
-<?php renderFooter(); ?>
+<?php
+$content = ob_get_clean();
+
+// Incluir layout profissional
+include 'includes/layout-professional.php';
+?>

@@ -81,7 +81,7 @@
                     <span class="navbar-text me-3">
                         <i class="fas fa-server"></i>
                         <?php
-                        include '../config/config.php';
+                        include 'config/config.php';
                         $config = getDatabaseConfig();
                         echo ucfirst($config['ambiente']);
                         ?>

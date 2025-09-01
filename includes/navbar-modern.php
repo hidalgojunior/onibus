@@ -192,7 +192,7 @@
                                 animation: pulse 2s infinite;
                             "></div>
                             <?php
-                            include '../config/config.php';
+                            include 'config/config.php';
                             $config = getDatabaseConfig();
                             echo '<span class="text-white-50 small">' . ucfirst($config['ambiente']) . '</span>';
                             ?>
