@@ -1,0 +1,487 @@
+/**
+ * Sistema de Cores para Transporte Escolar
+ * Paleta otimizada para transmitir confiança, segurança e tecnologia
+ */
+
+/* === VARIÁVEIS DE CORES === */
+:root {
+  /* Azul - Confiança, segurança e tecnologia */
+  --azul-escuro: #1E3A8A;    /* Cabeçalhos e menus */
+  --azul-claro: #3B82F6;     /* Botões de ação */
+  
+  /* Verde - Aprovação, segurança no trajeto */
+  --verde-medio: #10B981;    /* Status positivos */
+  --verde-claro: #6EE7B7;    /* Destaques sutis */
+  
+  /* Amarelo - Referência ao ônibus escolar */
+  --amarelo-onibus: #FACC15; /* Ícones de transporte, alertas */
+  
+  /* Cinza neutro - Fundo, texto secundário */
+  --cinza-claro: #F3F4F6;    /* Fundo principal */
+  --cinza-medio: #9CA3AF;    /* Textos e bordas */
+  --preto-suave: #111827;    /* Textos principais */
+}
+
+/* === BOTÕES === */
+.btn-primary {
+  @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors duration-200;
+  background-color: var(--azul-claro);
+}
+
+.btn-primary:hover {
+  background-color: var(--azul-escuro);
+}
+
+.btn-success {
+  @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors duration-200;
+  background-color: var(--verde-medio);
+}
+
+.btn-success:hover {
+  @apply bg-emerald-600;
+}
+
+.btn-warning {
+  @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium transition-colors duration-200;
+  background-color: var(--amarelo-onibus);
+  color: var(--preto-suave);
+}
+
+.btn-warning:hover {
+  @apply bg-yellow-500;
+}
+
+.btn-danger {
+  @apply inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium transition-colors duration-200;
+  color: var(--preto-suave);
+  background-color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--cinza-claro);
+}
+
+/* === CARDS === */
+.card {
+  @apply bg-white overflow-hidden shadow rounded-lg border border-gray-200;
+}
+
+.card-header {
+  @apply px-6 py-4 border-b border-gray-200;
+}
+
+.card-header.bg-primary {
+  background-color: var(--azul-escuro);
+  @apply text-white;
+}
+
+.card-header.bg-success {
+  background-color: var(--verde-medio);
+  @apply text-white;
+}
+
+.card-header.bg-warning {
+  background-color: var(--amarelo-onibus);
+  color: var(--preto-suave);
+}
+
+.card-body {
+  @apply px-6 py-4;
+  background-color: white;
+}
+
+/* === FORMULÁRIOS === */
+.form-control {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 transition-colors duration-200;
+  color: var(--preto-suave);
+}
+
+.form-control:focus {
+  border-color: var(--azul-claro);
+  @apply ring-2 ring-blue-500 ring-opacity-50 outline-none;
+}
+
+.form-label {
+  @apply block text-sm font-medium mb-1;
+  color: var(--preto-suave);
+}
+
+.form-select {
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm transition-colors duration-200;
+  color: var(--preto-suave);
+}
+
+.form-select:focus {
+  border-color: var(--azul-claro);
+  @apply ring-2 ring-blue-500 ring-opacity-50 outline-none;
+}
+
+/* === ALERTAS === */
+.alert-info {
+  @apply border rounded-md px-4 py-3;
+  background-color: #EBF8FF;
+  border-color: var(--azul-claro);
+  color: var(--azul-escuro);
+}
+
+.alert-success {
+  @apply border rounded-md px-4 py-3;
+  background-color: #ECFDF5;
+  border-color: var(--verde-medio);
+  color: #047857;
+}
+
+.alert-warning {
+  @apply border rounded-md px-4 py-3;
+  background-color: #FFFBEB;
+  border-color: var(--amarelo-onibus);
+  color: #92400E;
+}
+
+.alert-danger {
+  @apply bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md;
+}
+
+/* === BADGES === */
+.badge-primary {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  background-color: #DBEAFE;
+  color: var(--azul-escuro);
+}
+
+.badge-success {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  background-color: #D1FAE5;
+  color: #047857;
+}
+
+.badge-warning {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-bus {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  background-color: var(--amarelo-onibus);
+  color: var(--preto-suave);
+}
+
+/* === MODAIS === */
+.modal-backdrop {
+  @apply fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4;
+}
+
+.modal-dialog {
+  @apply relative w-full max-w-md max-h-full;
+}
+
+.modal-content {
+  @apply relative bg-white rounded-lg shadow-xl max-h-full overflow-hidden;
+}
+
+.modal-header {
+  @apply flex items-center justify-between p-5 border-b border-gray-200 text-white;
+  background-color: var(--azul-escuro);
+}
+
+.modal-body {
+  @apply p-6 overflow-y-auto;
+}
+
+.modal-footer {
+  @apply flex items-center justify-end p-6 space-x-2 border-t border-gray-200;
+  background-color: var(--cinza-claro);
+}
+
+.modal-close {
+  @apply text-white hover:text-gray-200 transition-colors duration-200;
+}
+
+/* === NAVEGAÇÃO === */
+.nav-link {
+  @apply inline-flex items-center px-1 pt-1 text-sm font-medium transition-colors duration-200;
+}
+
+.nav-link.active {
+  color: var(--azul-claro);
+  @apply border-b-2;
+  border-color: var(--azul-claro);
+}
+
+/* === UTILITÁRIOS DE CORES === */
+.text-primary {
+  color: var(--azul-claro);
+}
+
+.text-success {
+  color: var(--verde-medio);
+}
+
+.text-warning {
+  color: var(--amarelo-onibus);
+}
+
+.text-danger {
+  @apply text-red-500;
+}
+
+.bg-primary {
+  background-color: var(--azul-escuro);
+}
+
+.bg-success {
+  background-color: var(--verde-medio);
+}
+
+.bg-warning {
+  background-color: var(--amarelo-onibus);
+}
+
+/* === ESTADOS DE PRESENÇA === */
+.status-presente {
+  background-color: #D1FAE5;
+  color: #047857;
+  @apply border rounded px-2 py-1 text-xs font-medium;
+  border-color: var(--verde-medio);
+}
+
+.status-ausente {
+  @apply bg-red-100 text-red-800 border border-red-200 rounded px-2 py-1 text-xs font-medium;
+}
+
+.status-em-rota {
+  background-color: #D1FAE5;
+  color: #047857;
+  @apply border rounded px-2 py-1 text-xs font-medium;
+  border-color: var(--verde-medio);
+}
+
+.status-onibus {
+  background-color: #FEF3C7;
+  color: #92400E;
+  @apply border rounded px-2 py-1 text-xs font-medium;
+  border-color: var(--amarelo-onibus);
+}
+
+/* === TABELAS === */
+.table-header {
+  background-color: var(--cinza-claro);
+  color: var(--preto-suave);
+}
+
+.table-row:hover {
+  background-color: #F9FAFB;
+}
+
+/* === ÍCONES DE TRANSPORTE === */
+.icon-bus {
+  color: var(--amarelo-onibus);
+}
+
+.icon-route {
+  color: var(--verde-medio);
+}
+
+.icon-student {
+  color: var(--azul-claro);
+}
+
+/* === GRADIENTES === */
+.gradient-header {
+  background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-claro) 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, var(--verde-medio) 0%, var(--verde-claro) 100%);
+}
+
+/* === ANIMAÇÕES DE LOADING === */
+.loading-spinner {
+  border-color: var(--azul-claro);
+}
+
+/* === HEADER PERSONALIZADO === */
+.page-header {
+  background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-claro) 100%);
+  position: relative;
+  overflow: hidden;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  padding: 1.75rem 0;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(251, 191, 36, 0.08) 0%, transparent 50%);
+}
+
+.page-header-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+}
+
+.page-title {
+  @apply text-3xl md:text-4xl font-bold text-white mb-1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  line-height: 1.2;
+}
+
+.page-title-simple {
+  @apply text-5xl md:text-6xl font-bold text-white;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  @apply text-base md:text-lg text-blue-100 opacity-90;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 0.25rem;
+}
+
+.page-breadcrumb {
+  @apply flex items-center space-x-1 text-blue-200 text-sm mb-4;
+  font-weight: 500;
+}
+
+.page-breadcrumb-item {
+  @apply flex items-center hover:text-white transition-colors cursor-pointer;
+}
+
+.page-breadcrumb-item a {
+  @apply hover:text-white transition-colors duration-200;
+}
+
+.page-breadcrumb-separator {
+  @apply mx-2 text-blue-300 opacity-70;
+}
+
+.page-stats {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white border-opacity-20;
+}
+
+.page-stat-item {
+  @apply bg-white bg-opacity-15 rounded-xl p-4 text-center backdrop-blur-sm hover:bg-opacity-25 transition-all duration-300 border border-white border-opacity-10;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.page-stat-number {
+  @apply text-2xl md:text-3xl font-bold text-white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-stat-label {
+  @apply text-xs md:text-sm text-blue-100 mt-1 uppercase tracking-wide;
+  opacity: 0.9;
+}
+
+.header-icon {
+  @apply inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-white bg-opacity-20 text-amarelo-onibus text-3xl md:text-4xl;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-decoration {
+  @apply absolute opacity-10 text-6xl;
+  color: rgba(255, 255, 255, 0.1);
+}
+
+.header-decoration.top-right {
+  @apply top-4 right-4;
+}
+
+.header-decoration.bottom-left {
+  @apply bottom-4 left-4;
+}
+
+.page-header-actions {
+  @apply flex flex-col lg:flex-row items-start lg:items-center space-y-2 lg:space-y-0 lg:space-x-3;
+}
+
+.header-btn {
+  @apply px-4 py-2.5 bg-white bg-opacity-20 text-white rounded-lg hover:bg-opacity-30 transition-all duration-200 backdrop-blur-sm text-sm font-medium border border-white border-opacity-20;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+  .card-header {
+    @apply px-4 py-3;
+  }
+  
+  .card-body {
+    @apply px-4 py-3;
+  }
+
+  .page-header {
+    min-height: 120px;
+    padding: 1.5rem 0;
+  }
+  
+  .page-title {
+    @apply text-2xl;
+  }
+
+  .page-title-simple {
+    @apply text-4xl;
+  }
+  
+  .page-subtitle {
+    @apply text-base;
+  }
+  
+  .page-stats {
+    @apply grid-cols-2 gap-3 mt-6 pt-4;
+  }
+  
+  .header-icon {
+    @apply w-14 h-14 text-2xl;
+  }
+
+  .page-header-actions {
+    @apply flex-col space-y-2 mt-4;
+  }
+
+  .header-btn {
+    @apply w-full text-center;
+  }
+
+  .page-breadcrumb {
+    @apply text-xs;
+  }
+
+  .page-stat-item {
+    @apply p-3;
+  }
+
+  .page-stat-number {
+    @apply text-xl;
+  }
+
+  .page-stat-label {
+    @apply text-xs;
+  }
+}
