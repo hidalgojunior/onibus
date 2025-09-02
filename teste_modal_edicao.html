@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Modal de Edição</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Teste - Modal de Edição de Aluno</h2>
+        
+        <div class="alert alert-info">
+            <strong>Status:</strong> <span id="status">Carregando...</span>
+        </div>
+        
+        <button class="btn btn-primary" onclick="testarModal()">Testar Modal de Edição</button>
+        
+        <div class="mt-4">
+            <h4>Log de Teste</h4>
+            <div id="log" class="border p-3" style="height: 200px; overflow-y: auto; background-color: #f8f9fa;"></div>
+        </div>
+    </div>
+
+    <!-- Modal para editar aluno -->
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Aluno</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="editStudentForm">
+                    <div class="modal-body" id="editStudentContent">
+                        <!-- Conteúdo será carregado via JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Dados de teste (simulando um aluno)
+        const alunoTeste = {
+            id: 1,
+            nome: "João Silva Santos",
+            rg: "12.345.678-9",
+            rm: "123456",
+            serie: "3º Ano",
+            curso: "Ensino Médio",
+            telefone: "(11) 99999-1234",
+            data_aniversario: "2005-05-15",
+            responsavel_nome: "Maria Silva",
+            responsavel_telefone: "(11) 98888-5678",
+            responsavel_whatsapp: "(11) 98888-5678",
+            telefone_emergencia: "(11) 97777-9012",
+            ponto_embarque: "Praça Central",
+            endereco_completo: "Rua das Flores, 123 - Centro",
+            observacoes_medicas: "Alergia a dipirona",
+            whatsapp_permissao: 1,
+            autorizacao_transporte: 1
+        };
+
+        function openEditModal(id, aluno) {
+            log("=== OPENEDITMODAL ===");
+            log("Procurando modal editStudentModal...");
+            
+            const modalElement = document.getElementById("editStudentModal");
+            if (!modalElement) {
+                log("❌ Modal editStudentModal nao encontrado!");
+                return;
+            }
+            
+            log("✅ Modal encontrado, preenchendo formulario...");
+            
+            // Função para formatar data para input date
+            const formatDateForInput = (dateStr) => {
+                if (!dateStr) return "";
+                if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    return dateStr;
+                }
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return "";
+                return date.toISOString().split("T")[0];
+            };
+            
+            const contentElement = document.getElementById("editStudentContent");
+            if (contentElement) {
+                // Construir o HTML usando concatenação de strings
+                let html = "";
+                html += "<input type=\"hidden\" name=\"action\" value=\"update\">";
+                html += "<input type=\"hidden\" name=\"id\" value=\"" + aluno.id + "\">";
+                
+                html += "<div class=\"row\">";
+                html += "<div class=\"col-md-8 mb-3\">";
+                html += "<label class=\"form-label\">Nome Completo *</label>";
+                html += "<input type=\"text\" class=\"form-control\" name=\"nome\" value=\"" + (aluno.nome || "") + "\" required>";
+                html += "</div>";
+                html += "<div class=\"col-md-4 mb-3\">";
+                html += "<label class=\"form-label\">RG</label>";
+                html += "<input type=\"text\" class=\"form-control\" name=\"rg\" value=\"" + (aluno.rg || "") + "\">";
+                html += "</div>";
+                html += "</div>";
+                
+                html += "<div class=\"row\">";
+                html += "<div class=\"col-md-6 mb-3\">";
+                html += "<label class=\"form-label\">Data de Nascimento</label>";
+                html += "<input type=\"date\" class=\"form-control\" name=\"data_aniversario\" value=\"" + formatDateForInput(aluno.data_aniversario) + "\">";
+                html += "<small class=\"form-text text-muted\">Formato: dia/mês/ano</small>";
+                html += "</div>";
+                html += "<div class=\"col-md-6 mb-3\">";
+                html += "<label class=\"form-label\">Telefone</label>";
+                html += "<input type=\"text\" class=\"form-control\" name=\"telefone\" value=\"" + (aluno.telefone || "") + "\">";
+                html += "</div>";
+                html += "</div>";
+                
+                html += "<div class=\"row\">";
+                html += "<div class=\"col-md-6 mb-3\">";
+                html += "<div class=\"form-check\">";
+                html += "<input class=\"form-check-input\" type=\"checkbox\" name=\"whatsapp_permissao\" value=\"1\" " + (aluno.whatsapp_permissao == 1 ? "checked" : "") + ">";
+                html += "<label class=\"form-check-label\">Autoriza contato via WhatsApp</label>";
+                html += "</div>";
+                html += "</div>";
+                html += "</div>";
+                
+                contentElement.innerHTML = html;
+                log("✅ Formulario de edicao preenchido com sucesso");
+                log("📅 Data formatada: " + formatDateForInput(aluno.data_aniversario));
+            } else {
+                log("❌ Elemento editStudentContent nao encontrado!");
+                return;
+            }
+            
+            log("🔄 Abrindo modal de edicao com Bootstrap...");
+            try {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                log("✅ Modal de edicao aberto com sucesso!");
+            } catch (error) {
+                log("❌ Erro ao abrir modal de edicao: " + error.message);
+            }
+        }
+
+        function testarModal() {
+            log("🧪 Iniciando teste do modal de edição...");
+            log("📋 Dados do aluno: " + alunoTeste.nome);
+            log("📅 Data original: " + alunoTeste.data_aniversario);
+            openEditModal(alunoTeste.id, alunoTeste);
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('status').textContent = 'Sistema pronto para teste';
+            log('🚀 Sistema de teste carregado');
+            log('👆 Clique em "Testar Modal de Edição" para abrir o modal');
+        });
+    </script>
+</body>
+</html>
