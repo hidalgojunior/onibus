@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Campo Data de Aniversário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Teste - Campo Data de Aniversário</h2>
+        
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h4>Cadastro de Novo Aluno</h4>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nome *</label>
+                        <input type="text" class="form-control" value="Teste Silva">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" class="form-control" name="data_aniversario" id="data_cadastro">
+                        <small class="form-text text-muted">Formato: dia/mês/ano</small>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="testarData()">Testar Data</button>
+                </form>
+            </div>
+            
+            <div class="col-md-6">
+                <h4>Edição de Aluno Existente</h4>
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Nome *</label>
+                        <input type="text" class="form-control" value="João Silva Santos">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" class="form-control" name="data_aniversario" id="data_edicao" value="2005-05-15">
+                        <small class="form-text text-muted">Formato: dia/mês/ano</small>
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="testarEdicao()">Testar Edição</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4>Visualização da Data</h4>
+                <div class="alert alert-info">
+                    <strong>Data de teste (2005-05-15):</strong> <span id="data_formatada"></span>
+                </div>
+                <div class="alert alert-success">
+                    <strong>Data atual selecionada:</strong> <span id="data_atual"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4>Log de Testes</h4>
+                <div id="log" class="border p-3" style="height: 200px; overflow-y: auto; background-color: #f8f9fa;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        // Função para formatar data para exibição (igual à do sistema)
+        function formatDate(dateStr) {
+            if (!dateStr) return "Não informado";
+            const date = new Date(dateStr + "T00:00:00");
+            if (isNaN(date.getTime())) return "Data inválida";
+            return date.toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit", 
+                year: "numeric"
+            });
+        }
+        
+        // Função para formatar data para input (igual à do sistema)
+        function formatDateForInput(dateStr) {
+            if (!dateStr) return "";
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                return dateStr;
+            }
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return "";
+            return date.toISOString().split("T")[0];
+        }
+        
+        function testarData() {
+            const input = document.getElementById('data_cadastro');
+            const data = input.value;
+            log(`📅 Data selecionada: ${data}`);
+            log(`🔍 Data formatada para exibição: ${formatDate(data)}`);
+            log(`💾 Data para banco (ISO): ${data}`);
+            document.getElementById('data_atual').textContent = formatDate(data);
+        }
+        
+        function testarEdicao() {
+            const input = document.getElementById('data_edicao');
+            const data = input.value;
+            log(`✏️ Data em edição: ${data}`);
+            log(`🔍 Data formatada para exibição: ${formatDate(data)}`);
+            log(`💾 Valor para input date: ${formatDateForInput(data)}`);
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Exibir data de teste formatada
+            document.getElementById('data_formatada').textContent = formatDate('2005-05-15');
+            
+            // Configurar listeners
+            document.getElementById('data_cadastro').addEventListener('change', testarData);
+            document.getElementById('data_edicao').addEventListener('change', testarEdicao);
+            
+            log('🚀 Sistema de teste carregado');
+            log('📋 Teste: O campo date mostra o seletor nativo do navegador');
+            log('👁️ Visualização: Data formatada em DD/MM/AAAA');
+            log('💾 Banco: Data salva no formato YYYY-MM-DD (ISO)');
+        });
+    </script>
+</body>
+</html>

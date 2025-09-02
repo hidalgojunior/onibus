@@ -735,6 +735,7 @@ ob_start();
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Data de Nascimento</label>
                             <input type="date" class="form-control" name="data_aniversario">
+                            <small class="form-text text-muted">Formato: dia/mês/ano</small>
                         </div>
                     </div>
                     
@@ -938,7 +939,42 @@ window.viewStudent = function(id) {
 window.editStudent = function(id) {
     console.log("=== EDITSTUDENT CHAMADO ===");
     console.log("ID recebido:", id);
-    alert("Funcao de edicao sera implementada. ID: " + id);
+    console.log("Tipo do ID:", typeof id);
+    
+    if (!window.alunosData) {
+        console.error("alunosData nao esta definido!");
+        alert("Erro: Dados dos alunos nao carregados!");
+        return;
+    }
+    
+    const aluno = window.alunosData.find(a => a.id == id);
+    console.log("Aluno encontrado:", aluno);
+    
+    if (!aluno) {
+        console.error("Aluno nao encontrado para ID:", id);
+        alert("Aluno nao encontrado!");
+        return;
+    }
+    
+    console.log("Tentando abrir modal de edicao...");
+    
+    // Verificar se Bootstrap esta carregado
+    if (typeof bootstrap === "undefined") {
+        console.error("Bootstrap nao esta carregado!");
+        alert("Erro: Bootstrap nao carregado!");
+        return;
+    }
+    
+    // Esperar o DOM estar pronto se necessario
+    if (document.readyState === "loading") {
+        console.log("DOM ainda carregando, aguardando...");
+        document.addEventListener("DOMContentLoaded", function() {
+            openEditModal(id, aluno);
+        });
+    } else {
+        console.log("DOM pronto, abrindo modal de edicao...");
+        openEditModal(id, aluno);
+    }
 };
 
 window.deleteStudent = function(id) {
@@ -1000,9 +1036,14 @@ function openViewModal(id, aluno) {
     console.log("Modal encontrado, preenchendo conteudo...");
     
     const formatDate = (dateStr) => {
-        if (!dateStr) return "Nao informado";
-        const date = new Date(dateStr);
-        return date.toLocaleDateString("pt-BR");
+        if (!dateStr) return "Não informado";
+        const date = new Date(dateStr + "T00:00:00"); // Adiciona hora para evitar problemas de timezone
+        if (isNaN(date.getTime())) return "Data inválida";
+        return date.toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit", 
+            year: "numeric"
+        });
     };
     
     const contentElement = document.getElementById("viewStudentContent");
@@ -1105,6 +1146,150 @@ function openAddModal() {
     } catch (error) {
         console.error("Erro ao abrir modal de adicao:", error);
         alert("Erro ao abrir modal de adicao: " + error.message);
+    }
+}
+
+function openEditModal(id, aluno) {
+    console.log("=== OPENEDITMODAL ===");
+    console.log("Procurando modal editStudentModal...");
+    
+    const modalElement = document.getElementById("editStudentModal");
+    if (!modalElement) {
+        console.error("Modal editStudentModal nao encontrado!");
+        alert("Modal de edicao nao encontrado!");
+        return;
+    }
+    
+    console.log("Modal encontrado, preenchendo formulario...");
+    
+    // Função para formatar data para input date
+    const formatDateForInput = (dateStr) => {
+        if (!dateStr) return "";
+        // Se a data já está no formato YYYY-MM-DD, retorna como está
+        if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return dateStr;
+        }
+        // Se está em outro formato, converte
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "";
+        return date.toISOString().split("T")[0];
+    };
+    
+    const contentElement = document.getElementById("editStudentContent");
+    if (contentElement) {
+        contentElement.innerHTML = `
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="id" value="${aluno.id}">
+            
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label">Nome Completo *</label>
+                    <input type="text" class="form-control" name="nome" value="${aluno.nome || ''}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">RG</label>
+                    <input type="text" class="form-control" name="rg" value="${aluno.rg || ''}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">RM</label>
+                    <input type="text" class="form-control" name="rm" value="${aluno.rm || ''}">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Série *</label>
+                    <input type="text" class="form-control" name="serie" value="${aluno.serie || ''}" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Curso *</label>
+                    <input type="text" class="form-control" name="curso" value="${aluno.curso || ''}" required>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Data de Nascimento</label>
+                    <input type="date" class="form-control" name="data_aniversario" value="${formatDateForInput(aluno.data_aniversario)}">
+                    <small class="form-text text-muted">Formato: dia/mês/ano</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Telefone</label>
+                    <input type="text" class="form-control" name="telefone" value="${aluno.telefone || ''}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Nome do Responsável</label>
+                    <input type="text" class="form-control" name="responsavel_nome" value="${aluno.responsavel_nome || ''}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Telefone do Responsável</label>
+                    <input type="text" class="form-control" name="responsavel_telefone" value="${aluno.responsavel_telefone || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">WhatsApp do Responsável</label>
+                    <input type="text" class="form-control" name="responsavel_whatsapp" value="${aluno.responsavel_whatsapp || ''}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Telefone de Emergência</label>
+                    <input type="text" class="form-control" name="telefone_emergencia" value="${aluno.telefone_emergencia || ''}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Ponto de Embarque</label>
+                    <input type="text" class="form-control" name="ponto_embarque" value="${aluno.ponto_embarque || ''}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Endereço Completo</label>
+                    <textarea class="form-control" name="endereco_completo" rows="2">${aluno.endereco_completo || ''}</textarea>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Observações Médicas</label>
+                    <textarea class="form-control" name="observacoes_medicas" rows="2">${aluno.observacoes_medicas || ''}</textarea>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="whatsapp_permissao" value="1" ${aluno.whatsapp_permissao == 1 ? 'checked' : ''}>
+                        <label class="form-check-label">Autoriza contato via WhatsApp</label>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="autorizacao_transporte" value="1" ${aluno.autorizacao_transporte == 1 ? 'checked' : ''}>
+                        <label class="form-check-label">Autoriza transporte escolar</label>
+                    </div>
+                </div>
+            </div>
+        `;
+        console.log("Formulario de edicao preenchido");
+    } else {
+        console.error("Elemento editStudentContent nao encontrado!");
+    }
+    
+    console.log("Abrindo modal de edicao com Bootstrap...");
+    try {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        console.log("Modal de edicao aberto com sucesso!");
+    } catch (error) {
+        console.error("Erro ao abrir modal de edicao:", error);
+        alert("Erro ao abrir modal de edicao: " + error.message);
     }
 }
 
