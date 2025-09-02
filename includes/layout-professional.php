@@ -28,6 +28,7 @@ if (!isset($content)) $content = "";
             --success-color: #38a169;
             --warning-color: #d69e2e;
             --danger-color: #e53e3e;
+            --info-color: #3182ce;
             --light-gray: #f7fafc;
             --medium-gray: #edf2f7;
             --text-gray: #718096;
@@ -99,6 +100,19 @@ if (!isset($content)) $content = "";
         
         .sidebar-nav {
             padding: 1rem 0;
+        }
+        
+        .nav-section {
+            padding: 1rem 1.5rem 0.5rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
         }
         
         .nav-item {
@@ -530,41 +544,42 @@ if (!isset($content)) $content = "";
     <nav class="sidebar">
         <div class="sidebar-header">
             <a href="index.php" class="sidebar-logo">
-                <i class="fas fa-bus"></i>
+                <i class="fas fa-qrcode"></i>
                 <div>
-                    <div>Sistema Ônibus</div>
-                    <div class="sidebar-subtitle">Gestão de Frota</div>
+                    <div>Controle de Presenças</div>
+                    <div class="sidebar-subtitle">Ônibus Escolar</div>
                 </div>
             </a>
         </div>
         
         <div class="sidebar-nav">
             <div class="nav-item">
-                <a href="dashboard-professional.php" class="nav-link <?php echo ($page_title == 'Dashboard') ? 'active' : ''; ?>">
-                    <i class="fas fa-th-large"></i>
+                <a href="index.php" class="nav-link <?php echo ($page_title == 'Dashboard' || $page_title == 'Início') ? 'active' : ''; ?>">
+                    <i class="fas fa-home"></i>
                     Dashboard
                 </a>
             </div>
             
+            <div class="nav-section">
+                <div class="nav-section-title">CONTROLE DE PRESENÇAS</div>
+            </div>
+            
             <div class="nav-item">
-                <a href="eventos-professional.php" class="nav-link <?php echo ($page_title == 'Eventos') ? 'active' : ''; ?>">
-                    <i class="fas fa-calendar-alt"></i>
-                    Eventos
+                <a href="presencas-professional.php" class="nav-link <?php echo ($page_title == 'Controle de Presenças') ? 'active' : ''; ?>">
+                    <i class="fas fa-qrcode"></i>
+                    Scanner & Presenças
                 </a>
             </div>
             
             <div class="nav-item">
-                <a href="onibus-professional.php" class="nav-link <?php echo ($page_title == 'Ônibus') ? 'active' : ''; ?>">
-                    <i class="fas fa-bus"></i>
-                    Ônibus
+                <a href="qr-codes-professional.php" class="nav-link <?php echo ($page_title == 'QR Codes dos Alunos') ? 'active' : ''; ?>">
+                    <i class="fas fa-mobile-alt"></i>
+                    QR Codes dos Alunos
                 </a>
             </div>
             
-            <div class="nav-item">
-                <a href="alocacoes-professional.php" class="nav-link <?php echo ($page_title == 'Alocações') ? 'active' : ''; ?>">
-                    <i class="fas fa-route"></i>
-                    Alocações
-                </a>
+            <div class="nav-section">
+                <div class="nav-section-title">GESTÃO</div>
             </div>
             
             <div class="nav-item">
@@ -575,10 +590,39 @@ if (!isset($content)) $content = "";
             </div>
             
             <div class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-chart-line"></i>
-                    Relatórios
+                <a href="onibus-professional.php" class="nav-link <?php echo ($page_title == 'Ônibus') ? 'active' : ''; ?>">
+                    <i class="fas fa-bus"></i>
+                    Frota de Ônibus
                 </a>
+            </div>
+            
+            <div class="nav-item">
+                <a href="alocacoes-professional.php" class="nav-link <?php echo ($page_title == 'Alocações') ? 'active' : ''; ?>">
+                    <i class="fas fa-route"></i>
+                    Rotas & Alocações
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">RELATÓRIOS</div>
+            </div>
+            
+            <div class="nav-item">
+                <a href="dashboard-professional.php" class="nav-link <?php echo ($page_title == 'Dashboard') ? 'active' : ''; ?>">
+                    <i class="fas fa-chart-line"></i>
+                    Analytics Avançado
+                </a>
+            </div>
+            
+            <div class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    Relatórios de Frequência
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">SISTEMA</div>
             </div>
             
             <div class="nav-item">

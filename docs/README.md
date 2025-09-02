@@ -1,4 +1,4 @@
-# 🚌 Sistema de Gerenciamento de Transporte Escolar
+# 🚌 Sistema de Controle de Presenças em Ônibus Escolar
 
 <div align="center">
 
@@ -9,132 +9,165 @@
 
 </div>
 
-> **Sistema completo e profissional para gerenciamento de eventos escolares, alunos, frota de ônibus e alocações automáticas com QR Code**
+> **Sistema completo para controle de presenças de alunos em embarque/desembarque de ônibus escolares com QR Code e gestão em tempo real**
 
 ---
 
 ## 📋 **Sobre o Sistema**
 
-O **Sistema de Gerenciamento de Transporte Escolar** é uma solução moderna e completa desenvolvida para instituições educacionais que precisam organizar o transporte de alunos para eventos. O sistema oferece:
+O **Sistema de Controle de Presenças em Ônibus Escolar** é uma solução moderna desenvolvida para instituições educacionais que precisam controlar e monitorar o embarque e desembarque de alunos em ônibus escolares. O sistema oferece:
 
-- 🎯 **Gestão Completa de Eventos** com QR Codes para inscrições
-- 👥 **Cadastro e Gerenciamento de Alunos** via web e mobile
-- 🚌 **Controle Total da Frota** (ônibus, vans, micro-ônibus)
-- ⚡ **Alocação Automática Inteligente** baseada em algoritmos
-- 📊 **Dashboard Profissional** com métricas em tempo real
-- 📱 **Interface Responsiva** para todos os dispositivos
+- 🎯 **Controle de Presenças** em tempo real via QR Code
+- 👥 **Gestão de Alunos** com dados acadêmicos e de contato
+- 🚌 **Controle da Frota** com capacidades e rotas
+- 📱 **Sistema de QR Code** individual para cada aluno
+- ⚡ **Alertas Automáticos** para responsáveis via WhatsApp
+- 📊 **Dashboard em Tempo Real** com status de embarque
+- 📱 **Interface Mobile** para motoristas e monitores
 
 ---
 
 ## ✨ **Funcionalidades Principais**
 
-### 📅 **Gerenciamento de Eventos**
-- ✅ Cadastro completo com período, local e descrição
-- ✅ Geração automática de QR Codes únicos
-- ✅ Formulários de inscrição personalizados
-- ✅ Estatísticas em tempo real
-- ✅ Sistema completo de CRUD (Create, Read, Update, Delete)
+### � **Sistema de Presenças com QR Code**
+- ✅ QR Code individual para cada aluno
+- ✅ Leitura via smartphone do monitor/motorista
+- ✅ Registro de embarque e desembarque em tempo real
+- ✅ Validação automática de horários e rotas
+- ✅ Histórico completo de viagens por aluno
 
-### 👥 **Gestão de Alunos**
-- ✅ Cadastro via formulário administrativo ou QR Code público
-- ✅ Organização por série, curso, telefone e dados pessoais
-- ✅ Filtros avançados e busca inteligente
-- ✅ Validação automática de dados
-- ✅ Interface moderna e intuitiva
+### 👥 **Gestão de Alunos e Responsáveis**
+- ✅ Cadastro completo com dados acadêmicos e pessoais
+- ✅ Informações de contato dos responsáveis
+- ✅ Autorização de transporte e permissões WhatsApp
+- ✅ Fotos dos alunos para identificação
+- ✅ Histórico de presenças e faltas
 
-### 🚌 **Gerenciamento de Frota**
-- ✅ Cadastro de ônibus, vans e micro-ônibus
-- ✅ Configuração de capacidades e dias de reserva
-- ✅ Vinculação específica por evento
-- ✅ Controle de disponibilidade em tempo real
-- ✅ Relatórios de utilização da frota
+### 🚌 **Controle da Frota e Rotas**
+- ✅ Cadastro de ônibus com capacidades e identificação
+- ✅ Definição de rotas e pontos de parada
+- ✅ Alocação de alunos por ônibus e rota
+- ✅ Controle de motoristas e monitores
+- ✅ Monitoramento de ocupação em tempo real
 
-### ⚡ **Alocação Automática Inteligente**
-- ✅ Algoritmo baseado na ordem cronológica de inscrição
-- ✅ Otimização automática de ocupação
-- ✅ Respeito aos limites de capacidade
-- ✅ Distribuição equilibrada entre veículos
-- ✅ Relatórios detalhados de alocação
+### ⚡ **Alertas e Notificações Automáticas**
+- ✅ Notificação via WhatsApp para responsáveis
+- ✅ Confirmação de embarque e chegada
+- ✅ Alertas de ausência ou atraso
+- ✅ Relatórios diários de presenças
+- ✅ Notificações de emergência
 
-### 📱 **Sistema de QR Code**
-- ✅ Geração automática para cada evento
-- ✅ URLs públicas e seguras
-- ✅ Formulários responsivos
-- ✅ Validação em tempo real
-- ✅ Integração automática com o sistema
+### 📊 **Dashboard e Monitoramento**
+- ✅ Status em tempo real de todos os ônibus
+- ✅ Lista de alunos embarcados por veículo
+- ✅ Alertas de capacidade e segurança
+- ✅ Relatórios de frequência e pontualidade
+- ✅ Gráficos de utilização do transporte
 
-### 📊 **Dashboard e Relatórios**
-- ✅ Métricas em tempo real
-- ✅ Gráficos interativos (Chart.js)
-- ✅ Estatísticas de ocupação
-- ✅ Relatórios de eventos e alocações
-- ✅ Exportação de dados
+### 📱 **Interface Mobile para Campo**
+- ✅ App mobile para motoristas e monitores
+- ✅ Scanner QR Code otimizado
+- ✅ Interface offline para áreas sem sinal
+- ✅ Sincronização automática quando conectado
+- ✅ Emergência com botão de pânico
+
+---
+
+## 🔄 **Fluxo de Operação Diária**
+
+### 🌅 **Embarque Matutino**
+1. 📍 **Monitor/Motorista** chega ao ponto de embarque
+2. 📱 **Abre o app mobile** no smartphone
+3. 🔍 **Escaneia QR Code** do aluno ao embarcar
+4. ✅ **Sistema registra presença** e horário automaticamente
+5. 📨 **WhatsApp automático** confirma embarque aos pais
+6. 📊 **Dashboard atualiza** status em tempo real
+
+### 🏫 **Chegada na Escola**
+1. 🎯 **Monitor registra** chegada na escola
+2. 📝 **Sistema gera relatório** de alunos embarcados
+3. 🏫 **Escola recebe lista** de presenças via sistema
+4. 📊 **Atualização automática** do dashboard
+
+### 🌆 **Embarque Vespertino**
+1. 🔄 **Processo similar** ao matutino
+2. ✅ **Validação automática** de alunos autorizados
+3. 📨 **Notificação de saída** para responsáveis
+4. 🚌 **Controle de ocupação** em tempo real
+
+### 🏠 **Chegada aos Pontos**
+1. 📍 **Desembarque nos pontos** com registro QR
+2. ✅ **Confirmação de entrega** aos responsáveis
+3. 📊 **Relatório final** do dia gerado automaticamente
+4. 📈 **Estatísticas** atualizadas no dashboard
 
 ---
 
 ## 🏗️ **Arquitetura do Sistema**
 
 ```
-📁 SISTEMA DE TRANSPORTE ESCOLAR/
+📁 SISTEMA DE CONTROLE DE PRESENÇAS/
 │
 ├── 📁 admin/                    # 🔧 Administração do Sistema
 │   ├── install.php             # Instalação inicial do banco
 │   ├── update_database.php     # Atualizações do schema
 │   └── maintenance/            # Scripts de manutenção
 │
-├── 📁 api/                     # 🌐 APIs REST
-│   ├── eventos.php            # API de eventos
-│   ├── alunos.php             # API de alunos
-│   └── alocacoes.php          # API de alocações
+├── 📁 api/                     # 🌐 APIs REST  
+│   ├── presencas.php          # API de controle de presenças
+│   ├── alunos.php             # API de gestão de alunos
+│   ├── onibus.php             # API de controle da frota
+│   └── qr_codes.php           # API de QR Codes individuais
 │
 ├── 📁 assets/                  # 🎨 Recursos Estáticos
-│   ├── css/                   # Estilos customizados
-│   ├── js/                    # JavaScript customizado
-│   └── images/                # Imagens e ícones
+│   ├── css/                   # Estilos do sistema
+│   ├── js/                    # JavaScript para scanners
+│   └── images/                # Fotos dos alunos
 │
 ├── 📁 config/                  # ⚙️ Configurações
 │   ├── config.php             # Configuração principal
-│   ├── config_email.php       # Configuração de email
-│   └── config_timezone.php    # Configuração de fuso horário
+│   ├── whatsapp_config.php    # Config. notificações WhatsApp
+│   └── qr_config.php          # Config. sistema QR Code
 │
-├── 📁 debug/                   # 🔍 Ferramentas de Debug
-│   ├── test_*.php             # Scripts de teste
-│   └── diagnostics/           # Diagnósticos do sistema
+├── 📁 mobile/                  # � Interface Mobile
+│   ├── scanner.php            # Scanner QR para embarque
+│   ├── offline.php            # Modo offline
+│   └── sync.php               # Sincronização de dados
 │
 ├── 📁 includes/                # 🧩 Componentes Reutilizáveis
 │   ├── layout-professional.php # Layout principal
-│   ├── navbar-professional.php # Barra de navegação
-│   └── functions.php          # Funções utilitárias
+│   ├── navbar-professional.php # Navegação do sistema
+│   └── qr_functions.php       # Funções QR Code
 │
-├── 📁 inscricao/               # 📝 Sistema de Inscrições
-│   ├── index.php              # Formulário público
-│   ├── processar.php          # Processamento das inscrições
-│   └── assets/                # Recursos do formulário
+├── 📁 reports/                 # � Relatórios e Estatísticas
+│   ├── presencas_diarias.php  # Relatório diário de presenças
+│   ├── frequencia_alunos.php  # Frequência por aluno
+│   └── ocupacao_onibus.php    # Relatório de ocupação
 │
-├── 📁 pages/                   # 📄 Páginas Secundárias
-│   ├── eventos.php            # Gestão de eventos (legacy)
-│   └── utilities/             # Utilitários diversos
+├── 📁 notifications/           # � Sistema de Notificações
+│   ├── whatsapp_sender.php    # Envio WhatsApp
+│   ├── templates/             # Templates de mensagens
+│   └── queue/                 # Fila de envios
 │
-├── 📁 public/                  # 🌍 Arquivos Públicos
-│   ├── qr-codes/              # QR Codes gerados
-│   ├── uploads/               # Uploads de usuários
-│   └── temp/                  # Arquivos temporários
+├── 📁 qr_codes/               # 🔍 QR Codes dos Alunos
+│   ├── individual/            # QR Codes individuais por aluno
+│   └── backup/                # Backup dos QR Codes
 │
 ├── 📁 scripts/                 # 🔧 Scripts Utilitários
-│   ├── backup.php             # Backup automático
-│   ├── cleanup.php            # Limpeza de dados
-│   └── migration/             # Scripts de migração
+│   ├── backup_presencas.php   # Backup de presenças
+│   ├── cleanup_qr.php         # Limpeza de QR Codes
+│   └── sync_mobile.php        # Sincronização mobile
 │
 ├── 📁 sql/                     # 🗄️ Scripts SQL
-│   ├── create_tables.sql      # Criação das tabelas
-│   ├── initial_data.sql       # Dados iniciais
+│   ├── presencas_schema.sql   # Schema de presenças
+│   ├── qr_codes_schema.sql    # Schema QR Codes
 │   └── updates/               # Atualizações do schema
 │
 ├── 📄 index.php                # 🏠 Dashboard Principal
-├── 📄 eventos-professional.php # 📅 Gestão de Eventos
-├── 📄 alunos-professional.php  # 👥 Gestão de Alunos
-├── 📄 onibus-professional.php  # 🚌 Gestão de Frota
-├── 📄 alocacoes-professional.php # 🗺️ Gestão de Alocações
+├── 📄 alunos-professional.php  # � Gestão de Alunos
+├── 📄 onibus-professional.php  # � Gestão de Frota
+├── 📄 presencas-professional.php # ✅ Controle de Presenças
+├── 📄 alocacoes-professional.php # 🗺️ Gestão de Rotas/Alocações
 └── 📄 dashboard-professional.php # 📊 Dashboard Detalhado
 ```
 
@@ -144,81 +177,116 @@ O **Sistema de Gerenciamento de Transporte Escolar** é uma solução moderna e 
 
 | 🏠 **Página** | 📝 **Descrição** | ⚡ **Funcionalidades Principais** |
 |:---|:---|:---|
-| **`index.php`** | Dashboard Principal | Visão geral, estatísticas gerais, acesso rápido aos módulos |
-| **`eventos-professional.php`** | Gestão de Eventos | CRUD completo, geração de QR Codes, estatísticas por evento |
-| **`alunos-professional.php`** | Gestão de Alunos | Lista de alunos, filtros avançados, informações detalhadas |
-| **`onibus-professional.php`** | Gestão de Frota | CRUD de veículos, capacidades, tipos (ônibus/van/carro) |
-| **`alocacoes-professional.php`** | Gestão de Alocações | Visualização de alocações aluno-ônibus-evento |
-| **`dashboard-professional.php`** | Dashboard Analytics | Gráficos avançados, métricas detalhadas, relatórios |
+| **`index.php`** | Dashboard Principal | Status em tempo real, presenças do dia, ocupação dos ônibus |
+| **`presencas-professional.php`** | Controle de Presenças | Scanner QR, histórico, relatórios de frequência |
+| **`alunos-professional.php`** | Gestão de Alunos | Cadastro completo, QR individuais, dados dos responsáveis |
+| **`onibus-professional.php`** | Gestão de Frota | Ônibus, rotas, capacidades, motoristas e monitores |
+| **`alocacoes-professional.php`** | Gestão de Rotas | Alocação aluno-ônibus-rota, otimização de ocupação |
+| **`dashboard-professional.php`** | Analytics Avançado | Relatórios detalhados, gráficos de frequência, estatísticas |
 
 ---
 
-## 📊 **Modelo de Dados**
+## 📊 **Modelo de Dados Focado em Presenças**
 
-### 🗄️ **Estrutura do Banco de Dados**
+### 🗄️ **Estrutura Principal do Banco**
 
 ```sql
--- 📅 EVENTOS
-CREATE TABLE eventos (
+-- ✅ PRESENÇAS (Tabela Principal)
+CREATE TABLE presencas (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(255) NOT NULL,
-    data_inicio DATE NOT NULL,
-    data_fim DATE NOT NULL,
-    local VARCHAR(255),
-    descricao TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    aluno_id INT NOT NULL,
+    onibus_id INT NOT NULL,
+    data_presenca DATETIME NOT NULL,
+    tipo_registro ENUM('embarque', 'desembarque') NOT NULL,
+    qr_code_usado VARCHAR(255),
+    localizacao_gps VARCHAR(100),
+    monitor_responsavel VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (onibus_id) REFERENCES onibus(id)
 );
 
--- 👥 ALUNOS
+-- 🔍 QR CODES INDIVIDUAIS
+CREATE TABLE qr_codes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL UNIQUE,
+    codigo_qr VARCHAR(255) NOT NULL UNIQUE,
+    data_geracao DATETIME NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+    validade DATETIME,
+    tentativas_uso INT DEFAULT 0,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+);
+
+-- 👥 ALUNOS COM DADOS DE RESPONSÁVEIS
 CREATE TABLE alunos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(255) NOT NULL,
-    evento_id INT,
-    data_inscricao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     rg VARCHAR(20),
     rm VARCHAR(20),
     serie VARCHAR(50),
     curso VARCHAR(100),
     telefone VARCHAR(50),
     data_aniversario DATE,
-    whatsapp_permissao TINYINT(1) DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+    foto_perfil VARCHAR(255),
+    
+    -- Dados dos Responsáveis
+    responsavel_nome VARCHAR(255) NOT NULL,
+    responsavel_telefone VARCHAR(50),
+    responsavel_whatsapp VARCHAR(50),
+    whatsapp_permissao BOOLEAN DEFAULT TRUE,
+    telefone_emergencia VARCHAR(50),
+    
+    -- Dados de Transporte
+    endereco_completo TEXT,
+    ponto_embarque VARCHAR(255),
+    observacoes_medicas TEXT,
+    autorizacao_transporte BOOLEAN DEFAULT TRUE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 🚌 ÔNIBUS
+-- 🚌 ÔNIBUS E ROTAS
 CREATE TABLE onibus (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    numero VARCHAR(10) NOT NULL,
-    tipo ENUM('ônibus', 'van', 'carro') NOT NULL,
+    numero VARCHAR(10) NOT NULL UNIQUE,
+    placa VARCHAR(10),
+    tipo ENUM('ônibus', 'van', 'micro-ônibus') NOT NULL,
     capacidade INT NOT NULL,
-    evento_id INT,
-    dias_reservados INT DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+    motorista_nome VARCHAR(255),
+    monitor_nome VARCHAR(255),
+    rota_descricao TEXT,
+    turno ENUM('matutino', 'vespertino', 'ambos') DEFAULT 'ambos',
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 🗺️ ALOCAÇÕES
+-- 🗺️ ALOCAÇÕES DE ALUNOS POR ÔNIBUS
 CREATE TABLE alocacoes_onibus (
     id INT PRIMARY KEY AUTO_INCREMENT,
     aluno_id INT NOT NULL,
     onibus_id INT NOT NULL,
-    evento_id INT NOT NULL,
+    ponto_embarque VARCHAR(255),
+    horario_embarque TIME,
+    turno ENUM('matutino', 'vespertino') NOT NULL,
+    ativo BOOLEAN DEFAULT TRUE,
+    observacoes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (aluno_id) REFERENCES alunos(id),
     FOREIGN KEY (onibus_id) REFERENCES onibus(id),
-    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+    UNIQUE KEY unique_aluno_turno (aluno_id, turno)
 );
 
--- 📱 QR CODES
-CREATE TABLE qr_codes (
+-- � AUTORIZAÇÕES E NOTIFICAÇÕES
+CREATE TABLE autorizacoes (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    evento_id INT NOT NULL,
-    codigo VARCHAR(50) UNIQUE NOT NULL,
-    url_completa TEXT,
-    ativo TINYINT(1) DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (evento_id) REFERENCES eventos(id)
+    aluno_id INT NOT NULL,
+    tipo_autorizacao ENUM('transporte', 'whatsapp', 'emergencia') NOT NULL,
+    autorizado_por VARCHAR(255),
+    data_autorizacao DATETIME NOT NULL,
+    validade DATE,
+    ativo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id)
 );
 ```
 
@@ -242,16 +310,25 @@ CREATE TABLE qr_codes (
 // config/config.php
 function getDatabaseConfig() {
     return [
-        'host' => 'localhost',        // ou seu host
-        'usuario' => 'seu_usuario',   // usuário do MySQL
-        'senha' => 'sua_senha',       // senha do MySQL
-        'banco' => 'nome_do_banco',   // nome do banco
-        'ambiente' => 'producao'      // ou 'desenvolvimento'
+        'host' => '177.153.208.104',
+        'usuario' => 'onibus',
+        'senha' => 'Devisate@2025@',
+        'banco' => 'onibus',
+        'ambiente' => 'online'
     ];
 }
 ```
 
-#### 2️⃣ **Executar Instalação**
+#### 2️⃣ **Configurar WhatsApp (Opcional)**
+```php
+// config/whatsapp_config.php
+define('WHATSAPP_API_TOKEN', 'seu_token_api');
+define('WHATSAPP_PHONE_ID', 'seu_phone_id');
+define('MENSAGEM_EMBARQUE', 'Seu filho {nome} embarcou no ônibus {onibus} às {horario}');
+define('MENSAGEM_CHEGADA', 'Seu filho {nome} chegou no destino às {horario}');
+```
+
+#### 3️⃣ **Executar Instalação**
 ```bash
 # Acesse via navegador:
 http://seudominio.com/admin/install.php
@@ -260,73 +337,91 @@ http://seudominio.com/admin/install.php
 php admin/install.php
 ```
 
-#### 3️⃣ **Configurar Permissões**
+#### 4️⃣ **Configurar Permissões**
 ```bash
-# Permissões para upload e QR codes
-chmod 755 public/
-chmod 755 public/qr-codes/
-chmod 755 public/uploads/
-```
-
-#### 4️⃣ **Acessar o Sistema**
-```
-URL Principal: http://seudominio.com/
-Login Admin: Via index.php (sem autenticação por padrão)
+# Permissões para QR codes e notificações
+chmod 755 qr_codes/
+chmod 755 notifications/queue/
+chmod 755 mobile/offline/
 ```
 
 ---
 
-## 📱 **Sistema de QR Code - Guia Completo**
+## 📱 **Sistema de QR Code Individual - Guia Completo**
 
-### 🎯 **Como Funciona**
+### 🎯 **Como Funciona o Controle de Presenças**
 
 ```mermaid
 graph TD
-    A[📅 Evento Criado] --> B[🔄 QR Code Gerado Automaticamente]
-    B --> C[📱 QR Code Compartilhado]
-    C --> D[👤 Aluno Escaneia QR Code]
-    D --> E[📝 Formulário de Inscrição]
-    E --> F[✅ Dados Salvos no Sistema]
-    F --> G[⚡ Alocação Automática]
-    G --> H[📊 Relatórios Atualizados]
+    A[� Aluno Cadastrado] --> B[� QR Code Individual Gerado]
+    B --> C[📱 Monitor/Motorista com App]
+    C --> D[� Escaneia QR do Aluno]
+    D --> E[✅ Presença Registrada]
+    E --> F[📨 WhatsApp para Responsável]
+    F --> G[📊 Dashboard Atualizado]
+    G --> H[� Relatórios em Tempo Real]
 ```
 
-### 🔗 **Estrutura das URLs**
+### 🔗 **Estrutura dos QR Codes Individuais**
 
 ```
-Padrão: /inscricao/?evento={ID}&codigo={CODIGO_UNICO}
-Exemplo: /inscricao/?evento=1&codigo=EVT2025ABC123
+Cada aluno possui um QR Code único:
+Formato: ALN-{ID_ALUNO}-{HASH_SEGURANÇA}
+Exemplo: ALN-00042-X7K9M2P5
 
-Parâmetros:
-- evento: ID do evento no banco de dados
-- codigo: Código único de 6-8 caracteres
+Dados do QR Code:
+- ID único do aluno
+- Hash de segurança
+- Data de validade
+- Turno autorizado (matutino/vespertino)
 ```
 
-### 📋 **Processo de Inscrição**
+### 📋 **Processo de Embarque Diário**
 
-1. **Acesso**: Aluno escaneia QR Code ou acessa URL
-2. **Formulário**: Preenche dados pessoais e acadêmicos
-3. **Validação**: Sistema valida dados em tempo real
-4. **Confirmação**: Recebe confirmação de inscrição
-5. **Alocação**: Sistema aloca automaticamente em ônibus disponível
+1. **🌅 Preparação**: Monitor acessa app mobile no smartphone
+2. **📍 Chegada ao Ponto**: Ônibus chega ao ponto de embarque
+3. **🔍 Scanner QR**: Aluno apresenta QR Code individual
+4. **✅ Registro**: Monitor escaneia e registra presença
+5. **📨 Notificação**: WhatsApp automático para responsável
+6. **📊 Atualização**: Dashboard atualiza status em tempo real
 
-### 🛡️ **Segurança**
+### 🛡️ **Segurança e Validações**
 
-- ✅ Códigos únicos e não sequenciais
-- ✅ Validação de evento ativo
-- ✅ Sanitização de todos os inputs
-- ✅ Proteção contra SQL Injection
-- ✅ Rate limiting para evitar spam
+- ✅ QR Codes únicos e criptografados por aluno
+- ✅ Validação de horário e turno autorizado
+- ✅ Controle de tentativas de uso indevido
+- ✅ Localização GPS do embarque (opcional)
+- ✅ Backup offline para áreas sem internet
+- ✅ Sincronização automática quando reconectado
 
 ---
 
-## 🎨 **Interface e Design**
+## 📊 **Relatórios e Analytics em Tempo Real**
 
-### 🖥️ **Características do Design**
+### � **Dashboard Principal - Métricas Instantâneas**
 
-- **🎯 Design Profissional**: Interface moderna, limpa e intuitiva
-- **📱 Totalmente Responsivo**: Funciona perfeitamente em desktop, tablet e mobile
-- **🎨 Consistência Visual**: Padrão unificado em todas as páginas
+- **🚌 Status da Frota**: Localização e ocupação em tempo real
+- **👥 Alunos Embarcados**: Lista atualizada por ônibus
+- **📊 Taxa de Presença**: Percentuais diários, semanais e mensais
+- **⚠️ Alertas**: Ausências, atrasos e emergências
+- **� Mapa de Rotas**: Visualização GPS dos ônibus (se disponível)
+
+### 📋 **Relatórios Disponíveis**
+
+| 📄 **Relatório** | 📝 **Descrição** | ⏱️ **Período** |
+|:---|:---|:---|
+| **Presenças Diárias** | Lista de embarques por dia | Diário |
+| **Frequência por Aluno** | Histórico individual de presenças | Mensal |
+| **Ocupação por Ônibus** | Taxa de utilização da frota | Semanal |
+| **Faltas Consecutivas** | Alunos com ausências prolongadas | Tempo Real |
+| **Relatório para Escola** | Dados consolidados para direção | Mensal |
+
+### 🎨 **Interface e Design do Sistema**
+
+### 🖥️ **Características do Design Profissional**
+
+- **🎯 Foco na Funcionalidade**: Interface otimizada para uso rápido e eficiente
+- **📱 Mobile-First**: Prioridade para dispositivos móveis (monitores no campo)
 - **♿ Acessibilidade**: Cores contrastantes e navegação via teclado
 - **⚡ Performance**: Carregamento rápido e otimizado
 
